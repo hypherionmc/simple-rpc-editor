@@ -2,6 +2,8 @@
 
 ---
 
+[![Build Status](https://ci.explodingcreeper.me/buildStatus/icon?job=Simple+RPC+Config+Editor%2FDev+Builds)](https://ci.explodingcreeper.me/view/HypherionMC's%20Projects/job/Simple%20RPC%20Config%20Editor/job/Dev%20Builds/)
+
 ### What the heck is this?
 
 This program/piece of software was created to simplify the process of editing [Simple RPC](https://www.curseforge.com/minecraft/mc-mods/simple-discord-rpc) config files.
