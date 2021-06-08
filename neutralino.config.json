@@ -1,0 +1,30 @@
+{
+  "applicationId": "me.hypherionmc.simple-rpc-editor",
+  "port": 0,
+  "defaultMode": "window",
+  "enableHTTPServer": true,
+  "enableNativeAPI": true,
+  "url": "/resources/",
+  "nativeBlockList": [],
+  "globalVariables": {},
+  "modes": {
+    "window": {
+      "title": "Simple RPC Config Editor - Beta",
+      "width": 800,
+      "height": 500,
+      "fullScreen": false,
+      "alwaysOnTop": false,
+      "icon": "/resources/icons/appIcon.png",
+      "enableInspector": false,
+      "borderless": false,
+      "maximize": true
+    },
+    "browser": {},
+    "cloud": {}
+  },
+  "cli": {
+    "binaryName": "simple-rpc-editor",
+    "resourcesPath": "/resources/",
+    "clientLibrary": "/resources/assets/js/neutralino.js"
+  }
+}
