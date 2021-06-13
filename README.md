@@ -16,7 +16,6 @@ The aim of this software is to allow you to edit config files without having to 
 
 ### Known Issues
 
-* The SelectFile dialog opens behind the main app window -> Issue reported [HERE](https://github.com/neutralinojs/neutralinojs/issues/472)
 * Comments are removed from saved Config files -> This is a FAST-TOML limitation, and will be fixed in the future, but it's not a priority at this time
 
 ## Installation
