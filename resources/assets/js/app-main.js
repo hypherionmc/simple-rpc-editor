@@ -283,6 +283,9 @@ var app = new Vue({
         getSectIcon: function(sec) {
 
             switch (sec) {
+                case "general":
+                    return "fa fa-archive text-purple"
+
                 case "init":
                     return "fa fa-spinner text-primary"
 
