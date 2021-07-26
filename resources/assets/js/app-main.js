@@ -1,94 +1,213 @@
 var app = new Vue({
     el: '#app',
     data: {
+        isConfigLoaded: false,
+        configError: "",
         configData: [],
         appAssets: [],
-        vars: ["%player%", "%world%", "%mods%", "%difficulty% ", "%position%", "%biome%", "%mcver%", "%serverip%", "%servername%", "%players%", "%motd%", "%launcher%", "%pack%"],
         activeSection: 'general',
-        timeInMS: 0,
-        configPath: "Not Loaded"
+        timeInMs: 0,
+        configPath: "Not Loaded",
+        toast: {title: '', body: '', class: 'error'},
+        showPreview: true,
+        lastConfigData: [],
+        lastActiveSection: 'general',
+        aboutInfo: {os: NL_OS, nlversion: NL_VERSION, appver: NL_APPVERSION},
+        showAbout: false
     },
     created: function() {
         var appRef = this;
-
         Neutralino.init();
 
+        $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+        $('.toast').toast('hide');
+        appRef.setWindowTitle();
+
+        setTimeout(async function() {
+            $(".splashscreen").fadeOut("slow", function () {
+                $(".splashscreen").hide();
+                $(".noconfigsplash").fadeIn("slow");
+            });
+        }, 4000);
+
         setInterval(function () {
-            appRef.timeInMS += 1000;
-            $(".rpcTimer").text(msToTime(appRef.timeInMS) + " elapsed");
+            appRef.timeInMs += 1000;
+            $(".rpcTimer").text(msToTime(appRef.timeInMs) + " elapsed");
         }, 1000);
 
         setInterval(function () {
-            appRef.updateRPC(appRef.activeSection);
-        }, 100);
+            if (appRef.configData !== appRef.lastConfigData || appRef.activeSection !== appRef.lastActiveSection) {
+                appRef.updateRPC(appRef.activeSection);
+                appRef.lastConfigData = appRef.configData;
+                appRef.lastActiveSection = appRef.activeSection;
+            }
+        }, 10);
 
     },
     methods: {
-        updateRPC: function (sec) {
 
-            if (sec !== "general" && app.configData[sec] != null) {
-
-                var appRef = app;
-
-                if (appRef.configData[sec].enabled) {
-
-                    var dat = appRef.configData[sec];
-
-                    $(".rpcDescription").text(dat.description)
-                    $(".rpcState").text(dat.state)
-
-                    if (dat.buttons[0] != null) {
-
-                        var buttonHTML = `<a id="rpcButton1" class="disabled btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 140px; left: 20px; width: 280px;" href="${dat.buttons[0].url}">${dat.buttons[0].label}</a>`;
-
-                        if (dat.buttons[1] != null) {
-                            buttonHTML += `<a id="rpcButton2" class="disabled btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 190px; left: 20px; width: 280px;" href="${dat.buttons[1].url}">${dat.buttons[1].label}</a>`;
-                        }
-
-                        $(".rpcButtonContainer").html(buttonHTML);
-                    } else {
-                        $(".rpcButtonContainer").html("");
-                    }
-
-                    var assetID = appRef.appAssets.filter(c => c.name === appRef.configData[sec].largeImageKey);
-                    $("#rpcLargeImage").css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.general.clientID + "/" + assetID[0].id + ".png)");
-                    $("#rpcLargeImage").css("background-size", "100% 100%");
-
-                    var assetIDSmall = appRef.appAssets.filter(c => c.name === appRef.configData[sec].smallImageKey);
-                    $("#rpcSmallImage").css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.general.clientID + "/" + assetIDSmall[0].id + ".png)");
-                    $("#rpcSmallImage").css("background-size", "100% 100%");
-
-                } else {
-                    var dat = appRef.configData.generic;
-
-                    $(".rpcDescription").text(dat.description)
-                    $(".rpcState").text(dat.state)
-
-                    if (dat.buttons[0] != null) {
-
-                        var buttonHTML = `<a id="rpcButton1" class="disabled btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 140px; left: 20px; width: 280px;" href="${dat.buttons[0].url}">${dat.buttons[0].label}</a>`;
-
-                        if (dat.buttons[1] != null) {
-                            buttonHTML += `<a id="rpcButton2" class="disabled btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 190px; left: 20px; width: 280px;" href="${dat.buttons[1].url}">${dat.buttons[1].label}</a>`;
-                        }
-
-                        $(".rpcButtonContainer").html(buttonHTML);
-                    } else {
-                        $(".rpcButtonContainer").html("");
-                    }
-
-                    var assetID = appRef.appAssets.filter(c => c.name === appRef.configData[sec].largeImageKey);
-                    $("#rpcLargeImage").css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.general.clientID + "/" + assetID[0].id + ".png)");
-                    $("#rpcLargeImage").css("background-size", "100% 100%");
-
-                    var assetIDSmall = appRef.appAssets.filter(c => c.name === appRef.configData[sec].smallImageKey);
-                    $("#rpcSmallImage").css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.general.clientID + "/" + assetIDSmall[0].id + ".png)");
-                    $("#rpcSmallImage").css("background-size", "100% 100%");
-                }
-
+        // Window Methods
+        setWindowTitle: async function() {
+            await Neutralino.window.setTitle('Simple RPC Editor Beta - ' + NL_APPVERSION);
+        },
+        openexternal: async function(urlToOpen) {
+            await Neutralino.app.open({
+                url: urlToOpen
+            });
+        },
+        showToast: function (type, title, body, timeout) {
+            var appRef = app;
+            appRef.toast.title = title;
+            appRef.toast.body = body;
+            switch (type) {
+                case 'error':
+                    appRef.toast.class = 'exclamation';
+                    $(".toast-title").addClass('text-danger');
+                    break;
+                case 'info':
+                    appRef.toast.class = 'info';
+                    $(".toast-title").addClass('text-info');
+                    break;
+                case 'success':
+                    appRef.toast.class = 'check-circle';
+                    $(".toast-title").addClass('text-success');
+                    break;
             }
+            $('.toast').toast('show');
+        },
+        logdata: async function(type, data) {
+            await Neutralino.debug.log({
+                type: type,
+                message: data
+            });
+        },
+
+        // Config Functions
+        loadConfigFile: async function() {
+            var appRef = app;
+
+            Neutralino.os.showDialogOpen({
+                title: "Select Simple RPC Config File",
+                isDirectoryMode: false,
+                filter: "toml"
+            }).then(response => {
+                if (response.selectedEntry != null && response.success) {
+
+                    if (response.selectedEntry.endsWith(".toml")) {
+                        Neutralino.filesystem.readFile({
+                            fileName: response.selectedEntry
+                        }).then(tomlFile => {
+                            const data = TOML.parse(tomlFile.data);
+
+                            if (data.general != null && data.general.clientID != null) {
+                                appRef.logdata('INFO', "Loaded config file: " + response.selectedEntry);
+                                appRef.configData = data;
+                                appRef.configPath = response.selectedEntry;
+                                appRef.isConfigLoaded = true;
+
+                                // This API call runs through a proxy server, because JQUERY blocks calls to the discord API due to missing headers
+                                // The proxy server is powered by this code: https://github.com/jesperorb/node-api-proxy
+                                $.ajax({
+                                    type: "GET",
+                                    url: "https://rpc-proxy.herokuapp.com/" + app.configData.general.clientID + "/assets"
+                                }).done(function (data, textStatus, jqXHR) {
+                                    appRef.appAssets = data;
+                                    appRef.logdata('INFO', "Successfully fetched discord assets for app with id: " + appRef.configData.general.clientID)
+                                });
+                            } else {
+                                appRef.showToast('error', "Error", 'Selected file is not a Simple RPC Config file or the file is corrupt!', 10000);
+                            }
+                            return tomlFile;
+                        });
+                    } else {
+                        appRef.showToast('error', "Error", 'Selected file is not a Simple RPC Config file or the file is corrupt!', 10000);
+                    }
+
+                }
+                return response;
+            }).catch(err => {
+                appRef.showToast('error', "Error", 'Failed to load Config File', 10000);
+                appRef.logdata('ERROR', err);
+                console.error(err);
+                return err;
+            });
 
         },
+        saveConfig: async function () {
+
+            var outFile = "";
+
+            $.each(app.configData, function (key, value) {
+
+                outFile += "[" + key + "]\n";
+
+                $.each(value, function (subkey, subvalue) {
+
+                    if (subkey !== "buttons" && subkey !== "worlds") {
+
+                        if (typeof subvalue === "string" && !isNumeric(subvalue)) {
+                            outFile += `\t${subkey} = "${subvalue}"\n`;
+                        } else {
+                            outFile += `\t${subkey} = ${subvalue}\n`;
+                        }
+
+                    } else if (subkey === "buttons") {
+
+                        if (subvalue.length > 0) {
+
+                            for (let i = 0; i < subvalue.length; i++) {
+                                outFile += `\n\t[[${key}.buttons]]\n\t\tlabel = "${subvalue[i].label}"\n\t\turl = "${subvalue[i].url}"\n`;
+                            }
+
+                            if (subvalue.length > 1) {
+                                outFile += `\n`;
+                            }
+
+                        } else {
+                            outFile += `\tbuttons = []\n`;
+                        }
+
+                    } else if (subkey === "worlds") {
+
+                        if (subvalue.length > 0) {
+
+                            for (let i = 0; i < subvalue.length; i++) {
+                                outFile += `\n\t[[${key}.worlds]]\n\t\tworldname = "${subvalue[i].worldname}"\n\t\tlargeImageKey = "${subvalue[i].largeImageKey}"\n\t\tlargeImageText = "${subvalue[i].largeImageText}"\n\t\tsmallImageKey = "${subvalue[i].smallImageKey}"\n\t\tsmallImageText = "${subvalue[i].smallImageText}"\n`;
+                            }
+
+                            if (subvalue.length > 1) {
+                                outFile += `\n`;
+                            }
+
+                        } else {
+                            outFile += `\tworlds = []\n`;
+                        }
+
+                    }
+
+                });
+
+                outFile += "\n";
+            });
+
+            Neutralino.filesystem.writeFile({
+                fileName: app.configPath,
+                data: outFile
+            }).then(res => {
+                if (res) {
+                    app.showToast('info', "Success", "Config file has been saved", 0);
+                    app.logdata('INFO', "Config saved to: " + app.configPath);
+                }
+                return res;
+            }).catch(err => {
+                app.showToast('error', "Error", "Config file could not be saved", 0);
+                app.logdata('ERROR', err);
+                return err;
+            });
+
+        },
+
+        // Editor Functions
         addButton: function (sec) {
 
             var buttonData = {
@@ -156,127 +275,51 @@ var app = new Vue({
             });
 
         },
-        loadConfigFile: async function () {
+        updateRPC: function (sec) {
 
-            let response = await Neutralino.os.showDialogOpen({
-                title: "Select Simple RPC Config File",
-                isDirectoryMode: false,
-                filter: "toml"
-            });
+            var appRef = this;
 
-            if (!response.selectedEntry.endsWith(".toml")) {
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'error',
-                    title: 'Selected file is not a Simple RPC Config file or the file is corrupt!',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            } else {
+            if (appRef.configData[sec] != null) {
+                let dat;
 
-                let tomlFile = await Neutralino.filesystem.readFile({
-                    fileName: response.selectedEntry
-                });
-
-                const tomlString = String(tomlFile.data);
-                const data = TOML.parse(tomlString);
-
-                if (data.general != null) {
-                    app.configData = data;
-                    app.configPath = response.selectedEntry;
-
-                    // This API call runs through a proxy server, because JQUERY blocks calls to the discord API due to missing headers
-                    // The proxy server is powered by this code: https://github.com/jesperorb/node-api-proxy
-                    $.ajax({
-                        type: "GET",
-                        url: "https://rpc-proxy.herokuapp.com/" + app.configData.general.clientID + "/assets"
-                    }).done(function (data, textStatus, jqXHR) {
-                        app.appAssets = data;
-                    });
-
+                if (sec !== "general" && sec !== "world_images") {
+                    dat = appRef.configData[sec].enabled ? appRef.configData[sec] : appRef.configData.generic;
                 } else {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: 'Selected file is not a Simple RPC Config file or the file is corrupt!',
-                        showConfirmButton: false,
-                        timer: 2000
-                    });
+                    dat = appRef.configData.generic;
                 }
 
-            }
+                $(".rpcDescription").text(appRef.dummyVars(dat.description)).attr("title", appRef.dummyVars(dat.description));
+                $(".rpcState").text(appRef.dummyVars(dat.state)).attr("title", appRef.dummyVars(dat.state));
 
-        },
-        saveConfig: async function () {
+                if (dat.buttons[0] != null) {
 
-            var outFile = "";
+                    var buttonHTML = `<a id="rpcButton1" class="disabled btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 140px; left: 20px; width: 280px;" href="${dat.buttons[0].url}">${dat.buttons[0].label}</a>`;
 
-            $.each(app.configData, function (key, value) {
+                    if (dat.buttons[1] != null) {
+                        buttonHTML += `<a id="rpcButton2" class="disabled btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 190px; left: 20px; width: 280px;" href="${dat.buttons[1].url}">${dat.buttons[1].label}</a>`;
+                    }
 
-                outFile += "[" + key + "]\n";
+                    $(".rpcButtonContainer").html(buttonHTML);
+                } else {
+                    $(".rpcButtonContainer").html("");
+                }
 
-                $.each(value, function (subkey, subvalue) {
+                var assetID = appRef.appAssets.filter(c => c.name === appRef.configData[sec].largeImageKey);
+                if (assetID[0] !== undefined && assetID[0].hasOwnProperty("id")) {
+                    $("#rpcLargeImage")
+                        .css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.general.clientID + "/" + assetID[0].id + ".png)")
+                        .css("background-size", "100% 100%")
+                        .attr("title", appRef.dummyVars(dat.largeImageText));
+                }
 
-                   if (subkey !== "buttons" && subkey !== "worlds") {
+                var assetIDSmall = appRef.appAssets.filter(c => c.name === appRef.configData[sec].smallImageKey);
+                if (assetIDSmall[0] !== undefined && assetIDSmall[0].hasOwnProperty("id")) {
+                    $("#rpcSmallImage")
+                        .css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.general.clientID + "/" + assetIDSmall[0].id + ".png)")
+                        .css("background-size", "100% 100%")
+                        .attr("title", appRef.dummyVars(dat.smallImageText));
+                }
 
-                       if (typeof subvalue === "string" && !isNumeric(subvalue)) {
-                           outFile += `\t${subkey} = "${subvalue}"\n`;
-                       } else {
-                           outFile += `\t${subkey} = ${subvalue}\n`;
-                       }
-
-                   } else if (subkey === "buttons") {
-
-                       if (subvalue.length > 0) {
-
-                           for (let i = 0; i < subvalue.length; i++) {
-                               outFile += `\n\t[[${key}.buttons]]\n\t\tlabel = "${subvalue[i].label}"\n\t\turl = "${subvalue[i].url}"\n`;
-                           }
-
-                           if (subvalue.length > 1) {
-                               outFile += `\n`;
-                           }
-
-                       } else {
-                           outFile += `\tbuttons = []\n`;
-                       }
-
-                   } else if (subkey === "worlds") {
-
-                       if (subvalue.length > 0) {
-
-                           for (let i = 0; i < subvalue.length; i++) {
-                               outFile += `\n\t[[${key}.worlds]]\n\t\tworldname = "${subvalue[i].worldname}"\n\t\tlargeImageKey = "${subvalue[i].largeImageKey}"\n\t\tlargeImageText = "${subvalue[i].largeImageText}"\n\t\tsmallImageKey = "${subvalue[i].smallImageKey}"\n\t\tsmallImageText = "${subvalue[i].smallImageText}"\n`;
-                           }
-
-                           if (subvalue.length > 1) {
-                               outFile += `\n`;
-                           }
-
-                       } else {
-                           outFile += `\tworlds = []\n`;
-                       }
-
-                   }
-
-                });
-
-                outFile += "\n";
-            });
-
-            let response = await Neutralino.filesystem.writeFile({
-                fileName: app.configPath,
-                data: outFile
-            });
-
-            if (response) {
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Config file has been saved',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
             }
 
         },
@@ -311,6 +354,25 @@ var app = new Vue({
                     return "fa fa-globe text-pink"
             }
 
+        },
+        dummyVars: function (inputText) {
+
+            inputText = inputText.replace("%player%", "Dummy Player");
+            inputText = inputText.replace("%world%", "The Overworld");
+            inputText = inputText.replace("%mods%", Math.floor(Math.random() * 300) + 1);
+            inputText = inputText.replace("%difficulty%", "Easy");
+            inputText = inputText.replace("%position%", "x: 102 y: 52 z: 80");
+            inputText = inputText.replace("%biome%", "Plains");
+            inputText = inputText.replace("%mcver%", "1.17.1");
+            inputText = inputText.replace("%ip%", "DEPRECATED");
+            inputText = inputText.replace("%serverip%", "127.0.0.1");
+            inputText = inputText.replace("%servername%", "BisectHosting Rocks");
+            inputText = inputText.replace("%players%", Math.floor(Math.random() * 20) + 1);
+            inputText = inputText.replace("%motd%", "Check out Simple RPC");
+            inputText = inputText.replace("%launcher%", "MultiMC");
+            inputText = inputText.replace("%pack%", "Dummy Pack");
+
+            return inputText;
         }
     },
     filters: {
@@ -323,7 +385,7 @@ var app = new Vue({
             return normalString.charAt(0).toUpperCase() + normalString.slice(1);
         }
     }
-})
+});
 
 // Code from https://stackoverflow.com/a/9763769
 // Modified to reflect Discord Time for RPC's

@@ -1,18 +1,3 @@
-<!--
-=========================================================
-* Argon Dashboard - v1.2.0
-=========================================================
-* Product Page: https://www.creative-tim.com/product/argon-dashboard
-
-
-* Copyright  Creative Tim (http://www.creative-tim.com)
-* Coded by www.creative-tim.com
-
-=========================================================
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-* Modifications made by HypherionMC
--->
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,234 +5,205 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Simple RPC Config Editor</title>
 
-    <!-- Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
-    <!-- Icons -->
-    <link rel="stylesheet" href="assets/vendor/nucleo/css/nucleo.css" type="text/css">
-    <link rel="stylesheet" href="assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" type="text/css">
-    <!-- Argon CSS -->
-    <link rel="stylesheet" href="assets/css/argon.css?v=1.2.0" type="text/css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-</head>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/all.min.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/editor.css" type="text/css">
 
-<body class="bg-gradient-dark">
-    <div id="app">
-        <!-- Sidenav -->
-        <nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-dark bg-dark" id="sidenav-main">
-            <div class="scrollbar-inner">
-                <!-- Brand -->
-                <div class="sidenav-header align-items-center">
-                    <a class="navbar-brand" href="javascript:void(0)">
-                        Simple RPC Editor
+</head>
+<body style="overflow: hidden;">
+
+    <div id="app" style="overflow: hidden">
+
+        <div class="splashscreen">
+            <div class="text-center">
+                <img src="assets/img/rpc_edit.svg" />
+                <br><br>
+                <h4 data-text="Loading..." class="loading-animation">Loading...</h4>
+                <br>
+            </div>
+        </div>
+
+        <div class="noconfigsplash" v-if="!isConfigLoaded">
+            <div class="text-center">
+                <img src="assets/img/rpc_edit.svg" />
+                <br><br>
+                <p><b>Please choose a config file to get started</b></p>
+                <a href="#" v-on:click="loadConfigFile" class="btn btn-outline-info btn-sm">Load Config</a>
+                <br><br>
+                <p class="text-danger">{{configError}}</p>
+            </div>
+        </div>
+
+        <div class="aboutsplash" v-if="showAbout">
+            <div class="text-center">
+                <img src="assets/img/rpc_edit.svg" />
+                <br><br>
+                <p><b>Version: {{aboutInfo.appver}} | NeutralinoJS Version: {{aboutInfo.nlversion}} | OS: {{aboutInfo.os}}</b></p><br>
+                <p><b>Technologies:</b></p>
+                <p><a href="#" v-on:click="openexternal('https://getbootstrap.com/')">Bootstrap 4</a>, <a href="#" v-on:click="openexternal('https://vuejs.org/')">VUE.js</a>, <a href="#" v-on:click="openexternal('https://fontawesome.com/')">Font Awesome</a>, <a href="#" v-on:click="openexternal('https://neutralino.js.org/')">NeutralinoJS</a>, <a href="#" v-on:click="openexternal('https://github.com/hypherionmc/fast-toml/')">Fast-Toml</a></p><br>
+                <p><b>License: </b></p>
+                <p>This app and code is licensed under the MIT license. You can read the full license <a href="#" v-on:click="openexternal('https://github.com/hypherionmc/simple-rpc-editor/blob/master/LICENSE')">HERE</a></p><br>
+                <p><b>Contributors:</b></p>
+                <p><a href="#" v-on:click="openexternal('https://hypherionmc.me/')">HypherionSA</a> - Main Developer/Author</p><br>
+                <a href="#" class="btn btn-sm btn-outline-success" v-on:click="showAbout = false">Close</a>
+            </div>
+        </div>
+
+        <!-- Navbar -->
+        <div class="container-fluid nopad" style="height: 100vh;">
+
+            <div class="navbar-vertical" v-if="isConfigLoaded">
+                <div class="logobox">
+                    <a href="#" v-on:click="openexternal('https://github.com/hypherionmc/simple-rpc-editor')"><img src="assets/img/rpc_edit_horizontal.svg" style="width: 100%"/></a>
+                </div>
+
+                <div class="linkbox">
+                    <a v-for="(section, key) in configData" :class="[activeSection === key ? 'active' : '']" href="#" v-on:click="activeSection = key">
+                        <i :class="getSectIcon(key)"></i>
+                        <span class="nav-link-text">{{key | sectionToNormal}}</span>
                     </a>
                 </div>
-                <div class="navbar-inner">
-                    <!-- Collapse -->
-                    <div class="collapse navbar-collapse" id="sidenav-collapse-main">
-                        <!-- Nav items -->
-                        <ul class="navbar-nav">
 
-                            <li class="nav-item" v-for="(section, key) in configData">
-                                <a class="nav-link" :class="[activeSection === key ? 'active' : '']" href="#" v-on:click="activeSection = key">
-                                    <i :class="getSectIcon(key)"></i>
-                                    <span class="nav-link-text">{{key | sectionToNormal}}</span>
-                                </a>
-                            </li>
+                <a href="#" class="sponsorbutton" data-toggle="tooltip" data-placement="right" title="Support the development of projects like these" v-on:click="openexternal('https://www.buymeacoffee.com/hypherionsa')">
+                    <i class="fa fa-coffee"></i> Buy Me A Coffee
+                </a>
 
-                        </ul>
+                <div class="resourcebox">
+                    <a href="#" class="resbutton" v-on:click="openexternal('https://github.com/hypherionmc/simple-rpc-editor/issues')" data-toggle="tooltip" data-placement="top" title="Report Issue"><i class="fab fa-github"></i></a>
+                    <a href="#" class="resbutton" v-on:click="openexternal('https://github.com/hypherionmc/simple-rpc-editor/releases')" data-toggle="tooltip" data-placement="top" title="Latest Releases"><i class="fa fa-download"></i></a>
+                    <a href="#" class="resbutton" v-on:click="openexternal('https://discord.gg/PdVnXf9')" data-toggle="tooltip" data-placement="top" title="Support Discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="resbutton" v-on:click="showAbout = !showAbout" data-toggle="tooltip" data-placement="top" title="About"><i class="fa fa-question-circle"></i></a>
+                </div>
 
-                        <!-- Divider -->
-                        <hr class="my-3">
-                        <!-- Heading -->
-                        <h6 class="navbar-heading p-0 text-muted">
-                            <span class="docs-normal">Resources</span>
-                        </h6>
-                        <!-- Navigation -->
-                        <ul class="navbar-nav mb-md-3">
+            </div>
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://github.com/hypherionmc/simple-rpc-editor/issues" target="_blank">
-                                    <i class="fab fa-github"></i>
-                                    <span class="nav-link-text">Report Issue</span>
-                                </a>
-                            </li>
+        </div>
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://github.com/hypherionmc/simple-rpc-editor/releases" target="_blank">
-                                    <i class="fa fa-download"></i>
-                                    <span class="nav-link-text">Latest Releases</span>
-                                </a>
-                            </li>
+        <div class="editor-bar" v-if="isConfigLoaded">
+            <p class="text-secondary"><i class="fa fa-file-alt text-danger" style="margin-right: 10px;"></i>Editing: {{configPath}}</p>
+            <div class="editorbuttonbox">
+                <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" :title="showPreview ? 'Hide Preview' : 'Show Preview'" v-on:click="showPreview = !showPreview"><i class="fa fa-eye" v-if="!showPreview"></i><i class="fa fa-eye-slash" v-if="showPreview"></i></a>
+                <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" title="Save File" v-on:click="saveConfig"><i class="fa fa-save"></i></a>
+                <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" title="Load File" v-on:click="loadConfigFile"><i class="fa fa-file"></i></a>
+            </div>
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://discord.gg/PdVnXf9" target="_blank">
-                                    <i class="fab fa-discord"></i>
-                                    <span class="nav-link-text">Discord</span>
-                                </a>
-                            </li>
+        </div>
 
-                            <li class="nav-item">
-                                <a class="nav-link active active-pro" href="https://www.buymeacoffee.com/hypherionsa" target="_blank">
-                                    <i class="fa fa-coffee text-dark"></i>
-                                    <span class="nav-link-text">Buy Me A Coffee</span>
-                                </a>
-                            </li>
+        <div class="editorBody" v-if="isConfigLoaded">
 
-                        </ul>
+            <div class="card card-darker" v-if="configData.general != null">
+                <div class="card-header card-darker text-white">
+                    <h4 class="mb-0 text-white text-capitalize float-left">{{activeSection | sectionToNormal}} Config</h4> <a href="#" class="btn btn-success btn-sm float-right" v-if="activeSection === 'world_images'" v-on:click="addWorld(activeSection)">Add World</a>
+                </div>
+                <div class="card-body text-white">
+
+                    <div class="mb-3 row" v-for="(value, key) in configData[activeSection]" v-if="key !== 'buttons' && key !== 'worlds'">
+                        <label class="col-sm-2 col-form-label">{{key | camelToNormal}}</label>
+                        <div class="col-sm-10">
+
+                            <label class="custom-control custom-switch" v-if="typeof value === 'boolean'">
+                                <input type="checkbox" class="custom-control-input" v-model="configData[activeSection][key]">
+                                <span class="custom-control-label" data-label-off="No" data-label-on="Yes"></span>
+                            </label>
+
+                            <input type="text" class="form-control autoComp" :readonly="key === 'version'" v-if="typeof value !== 'boolean' && key !== 'largeImageKey' && key !== 'smallImageKey'" v-model="configData[activeSection][key]">
+
+                            <select class="form-control custom-select" v-if="key === 'largeImageKey' || key === 'smallImageKey'" v-model="configData[activeSection][key]">
+                                <option v-for="asset in appAssets" :value="asset.name">{{asset.name}}</option>
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="card card-secondary" v-if="configData.general != null && configData[activeSection].buttons != null">
+
+                        <div class="card-header card-secondary text-white">
+                            Buttons <button class="btn btn-sm btn-danger float-right" v-if="configData[activeSection].buttons.length < 2" v-on:click="addButton(activeSection)">Add</button>
+                        </div>
+
+                        <div style="padding: 10px;">
+                            <div class="input-group mb-3" v-for="(button, index) in configData[activeSection].buttons">
+                                <span class="input-group-text" style="border-radius: 5px 0px 0px 5px;">Label</span>
+                                <input type="text" class="form-control" v-model="button.label" style="border-radius: 0px;">
+                                <span class="input-group-text" style="border-radius: 0px;">Url</span>
+                                <input type="text" class="form-control" v-model="button.url" style="border-radius: 0px;">
+                                <button class="btn btn-warning btn-sm" v-on:click="deleteButton(activeSection, index)" style="border-radius: 0px 5px 5px 0px;">Delete</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="card card-secondary" v-if="activeSection === 'world_images'" v-for="(world, key) in configData.world_images.worlds" style="margin-bottom: 10px;">
+
+                        <div class="card-header card-secondary text-white">
+                            World Override ({{world.worldname}})
+                            <div class="btn-group float-right" role="group" aria-label="World Actions">
+                                <button type="button" class="btn btn-success btn-sm" v-on:click="addWorld(activeSection)">Add World</button>
+                                <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteWorld(activeSection, key)">Delete</button>
+                            </div>
+                        </div>
+
+                        <div style="padding: 10px;">
+                            <div class="mb-3 row" v-for="(worldData, datakey) in world">
+                                <label class="col-sm-2 col-form-label">{{datakey | camelToNormal}}</label>
+                                <div class="col-sm-10">
+
+                                    <select class="form-control custom-select" v-if="datakey === 'largeImageKey' || datakey === 'smallImageKey'" v-model="configData.world_images.worlds[key][datakey]">
+                                        <option v-for="asset in appAssets" :value="asset.name">{{asset.name}}</option>
+                                    </select>
+
+                                    <input type="text" class="form-control" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'worldname'" v-model="configData.world_images.worlds[key][datakey]">
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>
             </div>
-        </nav>
-        <!-- Main content -->
-        <div class="main-content" id="panel">
 
-            <!-- Header -->
-            <div class="header bg-primary pb-6">
-                <div class="container-fluid">
-                    <div class="header-body">
-                        <div class="row align-items-center py-4">
-                            <div class="col-lg-6 col-7">
-                                <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
-                                    <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
-                                        <li class="breadcrumb-item"><a href="#"><i class="fas fa-file"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="#">{{configPath}}</a></li>
-                                    </ol>
-                                </nav>
-                            </div>
-                            <div class="col-lg-6 col-5 text-right">
-                                <a href="#" class="btn btn-sm btn-neutral" v-on:click="loadConfigFile">Load Config File</a>
-                                <a href="#" class="btn btn-sm btn-neutral" v-on:click="saveConfig">Save Config File</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        </div>
+
+
+        <div class="toast" style="position: absolute; top: 75px; right: 10px;" data-delay="2000">
+            <div class="toast-header">
+                <i :class="'fa fa-' + toast.class + ' rounded mr-2'"></i>
+                <strong class="mr-auto toast-title">{{toast.title}}</strong>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
+            <div class="toast-body">
+                {{toast.body}}
+            </div>
+        </div>
 
-            <!-- Page content -->
-            <div class="container-fluid mt--6 bg-gradient-dark">
-                <div class="row">
+        <!-- Preview -->
+        <div class="rpc-container" :class="showPreview && !showAbout ? '' : ' hiderpc'">
+            <div class="rpc" style="background: #000; width: 320px; height: 250px;" v-if="configPath !== 'Not Loaded'" v-if="configData.general != null">
 
-                    <div class="col-xl-3 order-xl-2">
-                        <div class="card card-profile" v-if="configData.general != null">
+                <div id="rpcLargeImage" style="background-size: 100% 100%; background-repeat: no-repeat; position: absolute; top: 62px; left: 20px; width: 60px; height: 60px; background: white; border-radius: 10px;" title=""></div>
+                <div id="rpcSmallImage" style="background-size: 100% 100%; background-repeat: no-repeat; position: absolute; top: 104px; left: 64px; width: 20px; height: 20px; background: red; border-radius: 50%; z-index: 500" title="test"></div>
 
-                            <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4 bg-darker">
-                                <div class="d-flex justify-content-between">
-                                    <h4 class="text-white">Preview</h4>
-                                </div>
-                            </div>
-                            <div class="card-body pt-0 bg-darker">
-                                <div class="rpc" style="position: relative; background: #000; width: 320px; height: 250px;" v-if="configPath !== 'Not Loaded'">
+                <span class="rpcTitle text-white" style="position: absolute; top: 20px; left: 20px; font-size: 12px;"><b>PLAYING A GAME</b></span>
+                <span class="rpcAppName text-white" style="position: absolute; top: 58px; left: 90px; font-size: 14px;"><b>Minecraft</b></span>
+                <span class="rpcDescription text-white" style="position: absolute; top: 74px; left: 90px; white-space: nowrap; overflow: hidden; font-size: 12px; text-wrap: none; text-overflow: ellipsis; width: 200px;" title="">Config Not Loaded</span>
+                <span class="rpcState text-white" style="position: absolute; top: 89px; left: 90px; white-space: nowrap; overflow: hidden; font-size: 12px; text-wrap: none; text-overflow: ellipsis; width: 200px;" title="">Config Not Loaded</span>
+                <span class="rpcTimer text-white" style="position: absolute; top: 104px; left: 90px; font-size: 12px;">00:00 elapsed</span>
 
-                                    <div id="rpcLargeImage" style="background-size: 100% 100%; background-repeat: no-repeat; position: absolute; top: 62px; left: 20px; width: 60px; height: 60px; background: white; border-radius: 10px;" data-toggle="tooltip" data-placement="top" title="Tooltip on top"></div>
-                                    <div id="rpcSmallImage" style="background-size: 100% 100%; background-repeat: no-repeat; position: absolute; top: 104px; left: 64px; width: 20px; height: 20px; background: red; border-radius: 50%;"></div>
+                <div class="rpcButtonContainer">
 
-                                    <span class="rpcTitle text-white" style="position: absolute; top: 20px; left: 20px; font-size: 12px;"><b>PLAYING A GAME</b></span>
-                                    <span class="rpcAppName text-white" style="position: absolute; top: 58px; left: 90px; font-size: 14px;"><b>Minecraft</b></span>
-                                    <span class="rpcDescription text-white" style="position: absolute; top: 74px; left: 90px; white-space: nowrap; overflow: hidden; font-size: 12px; text-wrap: none; text-overflow: ellipsis; width: 240px;">Config Not Loaded</span>
-                                    <span class="rpcState text-white" style="position: absolute; top: 89px; left: 90px; white-space: nowrap; overflow: hidden; font-size: 12px; text-wrap: none; text-overflow: ellipsis; width: 240px;">Config Not Loaded</span>
-                                    <span class="rpcTimer text-white" style="position: absolute; top: 104px; left: 90px; font-size: 12px;">00:00 elapsed</span>
-
-                                    <div class="rpcButtonContainer">
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-9 order-xl-1" style="height: 100%;">
-
-                        <h2 v-if="configData.general == null">No config loaded</h2>
-
-                        <div class="card bg-gray-dark" v-if="configData.general != null">
-                            <div class="card-header bg-gray-dark text-white">
-                                <h3 class="mb-0 text-white text-capitalize">{{activeSection | sectionToNormal}} Config</h3>
-                            </div>
-                            <div class="card-body text-white">
-
-                                <div class="mb-3 row" v-for="(value, key) in configData[activeSection]" v-if="key !== 'buttons' && key !== 'worlds'">
-                                    <label class="col-sm-2 col-form-label">{{key | camelToNormal}}</label>
-                                    <div class="col-sm-10">
-
-                                        <label class="custom-toggle" v-if="typeof value === 'boolean'">
-                                            <input type="checkbox" v-model="configData[activeSection][key]">
-                                            <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
-                                        </label>
-
-                                        <input type="text" class="form-control autoComp" :readonly="key === 'version'" v-if="typeof value !== 'boolean' && key !== 'largeImageKey' && key !== 'smallImageKey'" v-model="configData[activeSection][key]">
-
-                                        <select class="form-control custom-select" v-if="key === 'largeImageKey' || key === 'smallImageKey'" v-model="configData[activeSection][key]">
-                                            <option v-for="asset in appAssets" :value="asset.name">{{asset.name}}</option>
-                                        </select>
-
-                                    </div>
-                                </div>
-
-                                <div class="card bg-default" v-if="configData.general != null && configData[activeSection].buttons != null">
-
-                                    <div class="card-header bg-default text-white">
-                                        Buttons <button class="btn btn-sm btn-danger float-right" v-if="configData[activeSection].buttons.length < 2" v-on:click="addButton(activeSection)">Add</button>
-                                    </div>
-
-                                    <div style="padding: 10px;">
-                                        <div class="input-group mb-3" v-for="(button, index) in configData[activeSection].buttons">
-                                            <span class="input-group-text">Label</span>
-                                            <input type="text" class="form-control" v-model="button.label">
-                                            <span class="input-group-text">Url</span>
-                                            <input type="text" class="form-control" v-model="button.url">
-                                            <button class="btn btn-warning btn-sm" v-on:click="deleteButton(activeSection, index)">Delete</button>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                <div class="card bg-default" v-if="activeSection === 'world_images'" v-for="(world, key) in configData.world_images.worlds">
-
-                                    <div class="card-header bg-default text-white">
-                                        World Override ({{world.worldname}})
-                                        <div class="btn-group float-right" role="group" aria-label="World Actions">
-                                            <button type="button" class="btn btn-success btn-sm" v-on:click="addWorld(activeSection)">Add World</button>
-                                            <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteWorld(activeSection, key)">Delete</button>
-                                        </div>
-                                    </div>
-
-                                    <div style="padding: 10px;">
-                                        <div class="mb-3 row" v-for="(worldData, datakey) in world">
-                                            <label class="col-sm-2 col-form-label">{{datakey}}</label>
-                                            <div class="col-sm-10">
-
-                                                <select class="form-control custom-select" v-if="datakey === 'largeImageKey' || datakey === 'smallImageKey'" v-model="configData.world_images.worlds[key][datakey]">
-                                                    <option v-for="asset in appAssets" :value="asset.name">{{asset.name}}</option>
-                                                </select>
-
-                                                <input type="text" class="form-control" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'worldname'" v-model="configData.world_images.worlds[key][datakey]">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
+
     </div>
-    <!-- Argon Scripts -->
-    <!-- Core -->
+
     <script src="assets/js/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/vendor/jquery.scrollbar/jquery.scrollbar.min.js"></script>
-    <script src="assets/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js"></script>
-    <!-- Argon JS -->
-    <script src="assets/js/argon.js?v=1.2.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.16/dist/sweetalert2.all.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/vue.min.js"></script>
     <script src="assets/js/neutralino.js"></script>
     <script src="assets/js/fast-toml.js"></script>
+    <script src="assets/js/sweetalert2.all.min.js"></script>
     <script src="assets/js/app-main.js"></script>
-
 </body>
 </html>

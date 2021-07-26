@@ -6,7 +6,9 @@
   "enableNativeAPI": true,
   "url": "/resources/",
   "nativeBlockList": [],
-  "globalVariables": {},
+  "globalVariables": {
+    "APPVERSION": "SETAPPVERSIONHERE"
+  },
   "modes": {
     "window": {
       "title": "Simple RPC Config Editor - Beta",
@@ -17,7 +19,7 @@
       "icon": "/resources/icons/appIcon.png",
       "enableInspector": true,
       "borderless": false,
-      "maximize": true
+      "maximize": false
     },
     "browser": {},
     "cloud": {}

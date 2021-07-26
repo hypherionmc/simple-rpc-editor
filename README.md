@@ -32,9 +32,7 @@ This app works on Windows, Linux and MacOS
 
 * [Bootstrap 4](https://getbootstrap.com) -> User Interface
 * [VUE.js](https://vuejs.org/) -> Data handling and realtime updates
-* [Argon Dashboard](https://www.creative-tim.com/product/argon-dashboard) -> The theme used on the User Interface (Modifications have been made)
 * [Font Awesome](https://fontawesome.com/) -> Icons
-* [Nucleo](https://nucleoapp.com/) -> Icons
 
 #### _Backend_
 
@@ -77,6 +75,5 @@ Contributions are welcome, and I have no specific formatting requirements, just 
 ## Licenses
 
 * [NeutralinoJS](https://github.com/neutralinojs/neutralinojs/blob/master/LICENSE) -> MIT LICENSE
-* [Argon](https://github.com/timcreative/freebies/blob/master/LICENSE.md) -> MIT License
 
 This app and code is licensed under the MIT license, but I do request that you change the name if you plan on releasing this yourself.
