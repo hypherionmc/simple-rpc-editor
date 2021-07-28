@@ -93,11 +93,11 @@
 
             <div class="card card-darker" v-if="configData.general != null">
                 <div class="card-header card-darker text-white">
-                    <h4 class="mb-0 text-white text-capitalize float-left">{{activeSection | sectionToNormal}} Config</h4> <a href="#" class="btn btn-success btn-sm float-right" v-if="activeSection === 'world_images'" v-on:click="addWorld(activeSection)">Add World</a>
+                    <h4 class="mb-0 text-white text-capitalize float-left">{{activeSection | sectionToNormal}} Config</h4> <a href="#" class="btn btn-success btn-sm float-right" v-if="activeSection === 'world_images'" v-on:click="addWorld(activeSection)">Add World</a> <a href="#" class="btn btn-success btn-sm float-right" v-if="activeSection === 'dimension_overrides'" v-on:click="addDimension(activeSection)">Add Dimension</a>
                 </div>
                 <div class="card-body text-white">
 
-                    <div class="mb-3 row" v-for="(value, key) in configData[activeSection]" v-if="key !== 'buttons' && key !== 'worlds'">
+                    <div class="mb-3 row" v-for="(value, key) in configData[activeSection]" v-if="key !== 'buttons' && key !== 'worlds' && key !== 'dimensions'">
                         <label class="col-sm-2 col-form-label">{{key | camelToNormal}}</label>
                         <div class="col-sm-10">
 
@@ -133,30 +133,65 @@
 
                     </div>
 
-                    <div class="card card-secondary" v-if="activeSection === 'world_images'" v-for="(world, key) in configData.world_images.worlds" style="margin-bottom: 10px;">
+                    <div v-if="configData.hasOwnProperty('world_images')">
+                        <div class="card card-secondary" v-if="activeSection === 'world_images'" v-for="(world, key) in configData.world_images.worlds" style="margin-bottom: 10px;">
 
-                        <div class="card-header card-secondary text-white">
-                            World Override ({{world.worldname}})
-                            <div class="btn-group float-right" role="group" aria-label="World Actions">
-                                <button type="button" class="btn btn-success btn-sm" v-on:click="addWorld(activeSection)">Add World</button>
-                                <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteWorld(activeSection, key)">Delete</button>
-                            </div>
-                        </div>
-
-                        <div style="padding: 10px;">
-                            <div class="mb-3 row" v-for="(worldData, datakey) in world">
-                                <label class="col-sm-2 col-form-label">{{datakey | camelToNormal}}</label>
-                                <div class="col-sm-10">
-
-                                    <select class="form-control custom-select" v-if="datakey === 'largeImageKey' || datakey === 'smallImageKey'" v-model="configData.world_images.worlds[key][datakey]">
-                                        <option v-for="asset in appAssets" :value="asset.name">{{asset.name}}</option>
-                                    </select>
-
-                                    <input type="text" class="form-control" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'worldname'" v-model="configData.world_images.worlds[key][datakey]">
+                            <div class="card-header card-secondary text-white">
+                                World Override ({{world.worldname}})
+                                <div class="btn-group float-right" role="group" aria-label="World Actions">
+                                    <button type="button" class="btn btn-success btn-sm" v-on:click="addWorld(activeSection)">Add World</button>
+                                    <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteWorld(activeSection, key)">Delete</button>
                                 </div>
                             </div>
-                        </div>
 
+                            <div style="padding: 10px;">
+                                <div class="mb-3 row" v-for="(worldData, datakey) in world">
+                                    <label class="col-sm-2 col-form-label">{{datakey | camelToNormal}}</label>
+                                    <div class="col-sm-10">
+
+                                        <select class="form-control custom-select" v-if="datakey === 'largeImageKey' || datakey === 'smallImageKey'" v-model="configData.world_images.worlds[key][datakey]">
+                                            <option v-for="asset in appAssets" :value="asset.name">{{asset.name}}</option>
+                                        </select>
+
+                                        <input type="text" class="form-control" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'worldname'" v-model="configData.world_images.worlds[key][datakey]">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div v-if="configData.hasOwnProperty('dimension_overrides')">
+                        <div class="card card-secondary" v-if="activeSection === 'dimension_overrides'" v-for="(dimension, key) in configData.dimension_overrides.dimensions" style="margin-bottom: 10px;">
+
+                            <div class="card-header card-secondary text-white">
+                                <div class="float-left">
+                                    Dimension Override ({{dimension.name}})
+                                    <p class="text-info text-sm-left" style="margin-bottom: 0px !important; font-size: 12px;">Note: Non Vanilla dimensions need to have their name in format "modid:dimension". For example: "dimensionpocketsii:pocket"</p>
+                                    <p class="text-danger text-sm-left" style="margin-bottom: 0px !important; font-size: 12px;">Leave values empty to ignore them</p>
+                                </div>
+                                <div class="btn-group float-right" role="group" aria-label="World Actions">
+                                    <button type="button" class="btn btn-success btn-sm" v-on:click="addDimension(activeSection)">Add Dimension</button>
+                                    <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteDimension(activeSection, key)">Delete Dimension</button>
+                                </div>
+                            </div>
+
+                            <div style="padding: 10px;">
+                                <div class="mb-3 row" v-for="(worldData, datakey) in dimension">
+                                    <label class="col-sm-2 col-form-label">{{datakey | camelToNormal}}</label>
+                                    <div class="col-sm-10">
+
+                                        <input type="text" class="form-control" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'name' || datakey === 'description' || datakey === 'state'" v-model="configData.dimension_overrides.dimensions[key][datakey]">
+
+                                        <select class="form-control custom-select" v-if="datakey === 'largeImageKey' || datakey === 'smallImageKey'" v-model="configData.dimension_overrides.dimensions[key][datakey]">
+                                            <option v-for="asset in appAssets" :value="asset.name">{{asset.name}}</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>

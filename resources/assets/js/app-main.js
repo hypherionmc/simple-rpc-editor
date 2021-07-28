@@ -10,18 +10,29 @@ var app = new Vue({
         configPath: "Not Loaded",
         toast: {title: '', body: '', class: 'error'},
         showPreview: true,
+        lastShowPreview: true,
         lastConfigData: [],
         lastActiveSection: 'general',
         aboutInfo: {os: NL_OS, nlversion: NL_VERSION, appver: NL_APPVERSION},
         showAbout: false
     },
-    created: function() {
+    created: async function() {
         var appRef = this;
         Neutralino.init();
 
         $("body").tooltip({ selector: '[data-toggle=tooltip]' });
         $('.toast').toast('hide');
         appRef.setWindowTitle();
+
+        Neutralino.storage.getData({
+            bucket: 'appsettings'
+        }).then(response => {
+            appRef.showPreview = response.showpreview;
+            return response;
+        }).catch(err => {
+            console.error(err);
+        });
+
 
         setTimeout(async function() {
             $(".splashscreen").fadeOut("slow", function () {
@@ -33,9 +44,18 @@ var app = new Vue({
         setInterval(function () {
             appRef.timeInMs += 1000;
             $(".rpcTimer").text(msToTime(appRef.timeInMs) + " elapsed");
+            if (appRef.lastShowPreview != appRef.showPreview) {
+                await Neutralino.storage.putData({
+                    bucket: 'appsettings',
+                    data: JSON.stringify({
+                        showpreview: appRef.showPreview
+                    })
+                });
+                appRef.lastShowPreview = appRef.showPreview;
+            }
         }, 1000);
 
-        setInterval(function () {
+        setInterval(async function () {
             if (appRef.configData !== appRef.lastConfigData || appRef.activeSection !== appRef.lastActiveSection) {
                 appRef.updateRPC(appRef.activeSection);
                 appRef.lastConfigData = appRef.configData;
@@ -89,7 +109,7 @@ var app = new Vue({
             Neutralino.os.showDialogOpen({
                 title: "Select Simple RPC Config File",
                 isDirectoryMode: false,
-                filter: "toml"
+                filter: ["toml"]
             }).then(response => {
                 if (response.selectedEntry != null && response.success) {
 
@@ -143,7 +163,7 @@ var app = new Vue({
 
                 $.each(value, function (subkey, subvalue) {
 
-                    if (subkey !== "buttons" && subkey !== "worlds") {
+                    if (subkey !== "buttons" && subkey !== "worlds" && subkey !== "dimensions") {
 
                         if (typeof subvalue === "string" && !isNumeric(subvalue)) {
                             outFile += `\t${subkey} = "${subvalue}"\n`;
@@ -181,6 +201,22 @@ var app = new Vue({
 
                         } else {
                             outFile += `\tworlds = []\n`;
+                        }
+
+                    } else if (subkey === "dimensions") {
+
+                        if (subvalue.length > 0) {
+
+                            for (let i = 0; i < subvalue.length; i++) {
+                                outFile += `\n\t[[${key}.dimensions]]\n\t\tname = "${subvalue[i].name}"\n\t\tdescription = "${subvalue[i].description}"\n\t\tstate = "${subvalue[i].state}"\n\t\tlargeImageKey = "${subvalue[i].largeImageKey}"\n\t\tlargeImageText = "${subvalue[i].largeImageText}"\n\t\tsmallImageKey = "${subvalue[i].smallImageKey}"\n\t\tsmallImageText = "${subvalue[i].smallImageText}"\n`;
+                            }
+
+                            if (subvalue.length > 1) {
+                                outFile += `\n`;
+                            }
+
+                        } else {
+                            outFile += `\tdimensions = []\n`;
                         }
 
                     }
@@ -275,6 +311,43 @@ var app = new Vue({
             });
 
         },
+        addDimension(sec) {
+
+            var worldData = {
+                name: "",
+                description: "",
+                state: "",
+                largeImageKey: "",
+                largeImageText: "",
+                smallImageKey: "",
+                smallImageText: ""
+            };
+
+            app.configData[sec].dimensions.push(worldData);
+
+        },
+        deleteDimension: function (sec, index) {
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    app.configData[sec].dimensions.splice(index, 1);
+                    Swal.fire(
+                        'Deleted!',
+                        'The dimension has been deleted',
+                        'success'
+                    )
+                }
+            });
+
+        },
         updateRPC: function (sec) {
 
             var appRef = this;
@@ -282,7 +355,7 @@ var app = new Vue({
             if (appRef.configData[sec] != null) {
                 let dat;
 
-                if (sec !== "general" && sec !== "world_images") {
+                if (sec !== "general" && sec !== "world_images" && sec !== "dimension_overrides") {
                     dat = appRef.configData[sec].enabled ? appRef.configData[sec] : appRef.configData.generic;
                 } else {
                     dat = appRef.configData.generic;
@@ -327,31 +400,34 @@ var app = new Vue({
 
             switch (sec) {
                 case "general":
-                    return "fa fa-archive text-purple"
+                    return "fa fa-archive text-purple";
 
                 case "init":
-                    return "fa fa-spinner text-primary"
+                    return "fa fa-spinner text-primary";
 
                 case "main_menu":
-                    return "fa fa-list text-secondary"
+                    return "fa fa-list text-secondary";
 
                 case "server_list":
-                    return "fa fa-server text-warning"
+                    return "fa fa-server text-warning";
 
                 case "join_game":
-                    return "fa fa-gamepad text-danger"
+                    return "fa fa-gamepad text-danger";
 
                 case "single_player":
-                    return "fa fa-user text-success"
+                    return "fa fa-user text-success";
 
                 case "multi_player":
-                    return "fa fa-users text-cyan"
+                    return "fa fa-users text-cyan";
 
                 case "generic":
-                    return "fa fa-tachometer-alt text-yellow"
+                    return "fa fa-tachometer-alt text-yellow";
 
                 case "world_images":
-                    return "fa fa-globe text-pink"
+                    return "fa fa-globe text-pink";
+
+                case "dimension_overrides":
+                    return "fa fa-globe text-pink";
             }
 
         },
