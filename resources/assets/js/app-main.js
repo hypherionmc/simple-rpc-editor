@@ -41,7 +41,7 @@ var app = new Vue({
             });
         }, 4000);
 
-        setInterval(function () {
+        setInterval(async function () {
             appRef.timeInMs += 1000;
             $(".rpcTimer").text(msToTime(appRef.timeInMs) + " elapsed");
             if (appRef.lastShowPreview != appRef.showPreview) {
@@ -105,7 +105,6 @@ var app = new Vue({
         // Config Functions
         loadConfigFile: async function() {
             var appRef = app;
-
             Neutralino.os.showDialogOpen({
                 title: "Select Simple RPC Config File",
                 isDirectoryMode: false,
@@ -117,10 +116,12 @@ var app = new Vue({
                         Neutralino.filesystem.readFile({
                             fileName: response.selectedEntry
                         }).then(tomlFile => {
-                            const data = TOML.parse(tomlFile.data);
+
+                            // Fix for some windows installs adding extra line breaks, breaking the editor
+                            var stringWithoutLineBreaks = tomlFile.data.replace(/\s*$/,"");
+                            var data = TOML.parse(stringWithoutLineBreaks);
 
                             if (data.general != null && data.general.clientID != null) {
-                                appRef.logdata('INFO', "Loaded config file: " + response.selectedEntry);
                                 appRef.configData = data;
                                 appRef.configPath = response.selectedEntry;
                                 appRef.isConfigLoaded = true;
@@ -147,7 +148,7 @@ var app = new Vue({
                 return response;
             }).catch(err => {
                 appRef.showToast('error', "Error", 'Failed to load Config File', 10000);
-                appRef.logdata('ERROR', err);
+                appRef.logdata('INFO', "Catch: " + err);
                 console.error(err);
                 return err;
             });
