@@ -108,7 +108,7 @@
 
                             <input type="text" class="form-control autoComp" :readonly="key === 'version'" v-if="typeof value !== 'boolean' && key !== 'largeImageKey' && key !== 'smallImageKey'" v-model="configData[activeSection][key]">
 
-                            <select class="form-control custom-select" v-if="key === 'largeImageKey' || key === 'smallImageKey'" v-model="configData[activeSection][key]">
+                            <select class="form-control custom-select" v-if="key === 'largeImageKey' || key === 'smallImageKey'" v-model="configData[activeSection][key]" v-on:change="updateRPC(activeSection)">
                                 <option v-for="asset in appAssets" :value="asset.name">{{asset.name}}</option>
                             </select>
 

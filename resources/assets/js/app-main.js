@@ -12,6 +12,7 @@ var app = new Vue({
         showPreview: true,
         lastShowPreview: true,
         lastConfigData: [],
+        lastClientId: 0,
         lastActiveSection: 'general',
         aboutInfo: {os: NL_OS, nlversion: NL_VERSION, appver: NL_APPVERSION},
         showAbout: false
@@ -57,10 +58,17 @@ var app = new Vue({
 
         setInterval(async function () {
             if (appRef.configData !== appRef.lastConfigData || appRef.activeSection !== appRef.lastActiveSection) {
+                console.log("Updating RPC");
                 appRef.updateRPC(appRef.activeSection);
                 appRef.lastConfigData = appRef.configData;
                 appRef.lastActiveSection = appRef.activeSection;
             }
+
+            if (appRef.lastClientId !== 0 && appRef.lastClientId !== appRef.configData.general.clientID) {
+                appRef.fetchAppAssets(appRef.configData.general.clientID);
+                appRef.lastClientId = appRef.configData.general.clientID;
+            }
+
         }, 10);
 
     },
@@ -125,16 +133,9 @@ var app = new Vue({
                                 appRef.configData = data;
                                 appRef.configPath = response.selectedEntry;
                                 appRef.isConfigLoaded = true;
+                                appRef.lastClientId = data.general.clientID;
+                                appRef.fetchAppAssets(data.general.clientID);
 
-                                // This API call runs through a proxy server, because JQUERY blocks calls to the discord API due to missing headers
-                                // The proxy server is powered by this code: https://github.com/jesperorb/node-api-proxy
-                                $.ajax({
-                                    type: "GET",
-                                    url: "https://rpc-proxy.herokuapp.com/" + app.configData.general.clientID + "/assets"
-                                }).done(function (data, textStatus, jqXHR) {
-                                    appRef.appAssets = data;
-                                    appRef.logdata('INFO', "Successfully fetched discord assets for app with id: " + appRef.configData.general.clientID)
-                                });
                             } else {
                                 appRef.showToast('error', "Error", 'Selected file is not a Simple RPC Config file or the file is corrupt!', 10000);
                             }
@@ -242,6 +243,17 @@ var app = new Vue({
                 return err;
             });
 
+        },
+        fetchAppAssets: function (appID) {
+            // This API call runs through a proxy server, because JQUERY blocks calls to the discord API due to missing headers
+            // The proxy server is powered by this code: https://github.com/jesperorb/node-api-proxy
+            $.ajax({
+                type: "GET",
+                url: "https://rpc-proxy.herokuapp.com/" + appID + "/assets"
+            }).done(function (data, textStatus, jqXHR) {
+                app.appAssets = data;
+                app.logdata('INFO', "Successfully fetched discord assets for app with id: " + appID)
+            });
         },
 
         // Editor Functions
