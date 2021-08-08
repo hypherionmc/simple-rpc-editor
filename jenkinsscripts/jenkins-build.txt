@@ -1,0 +1,17 @@
+echo "Building for Testing"
+neu build
+
+echo "Archiving the executables"
+mkdir release
+echo "Archiving for Mac"
+rename dist/simple-rpc-editor/simple-rpc-editor-mac dist/simple-rpc-editor/simple-rpc-editor-mac.app
+zip -j release/simple-rpc-editor-mac-1.${BUILD_NUMBER}-dev.zip dist/simple-rpc-editor/res.neu dist/simple-rpc-editor/simple-rpc-editor-mac.app
+
+echo "Archiving for Linux"
+zip -j release/simple-rpc-editor-linux-1.${BUILD_NUMBER}-dev.zip dist/simple-rpc-editor/res.neu dist/simple-rpc-editor/simple-rpc-editor-linux
+
+echo "Archiving for Windows"
+echo "CheckNetIsolation.exe LoopbackExempt -a -n=\"Microsoft.Win32WebViewHost_cw5n1h2txyewy\"" > "dist/simple-rpc-editor/WINDOWS_WHITESCREEN_FIX(RUN AS ADMIN).bat"
+zip -j release/simple-rpc-editor-win-1.${BUILD_NUMBER}-dev.zip dist/simple-rpc-editor/res.neu dist/simple-rpc-editor/simple-rpc-editor-win.exe dist/simple-rpc-editor/WebView2Loader.dll "dist/simple-rpc-editor/WINDOWS_WHITESCREEN_FIX(RUN AS ADMIN).bat"
+
+echo "Ready for Upload"
