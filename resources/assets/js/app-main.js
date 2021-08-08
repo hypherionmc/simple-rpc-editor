@@ -1,3 +1,4 @@
+var html_editor;
 var app = new Vue({
     el: '#app',
     data: {
@@ -13,6 +14,8 @@ var app = new Vue({
         lastShowPreview: true,
         lastConfigData: [],
         lastClientId: 0,
+        codeWindow: "",
+        codeEditorActive: false,
         lastActiveSection: 'general',
         aboutInfo: {os: NL_OS, nlversion: NL_VERSION, appver: NL_APPVERSION},
         showAbout: false
@@ -34,7 +37,6 @@ var app = new Vue({
             console.error(err);
         });
 
-
         setTimeout(async function() {
             $(".splashscreen").fadeOut("slow", function () {
                 $(".splashscreen").hide();
@@ -45,7 +47,7 @@ var app = new Vue({
         setInterval(async function () {
             appRef.timeInMs += 1000;
             $(".rpcTimer").text(msToTime(appRef.timeInMs) + " elapsed");
-            if (appRef.lastShowPreview != appRef.showPreview) {
+            if (appRef.lastShowPreview !== appRef.showPreview) {
                 await Neutralino.storage.putData({
                     bucket: 'appsettings',
                     data: JSON.stringify({
@@ -126,7 +128,7 @@ var app = new Vue({
                         }).then(tomlFile => {
 
                             // Fix for some windows installs adding extra line breaks, breaking the editor
-                            var stringWithoutLineBreaks = tomlFile.data.replace(/\s*$/,"");
+                            var stringWithoutLineBreaks = tomlFile.data.replace(/\s*$/, "");
                             var data = TOML.parse(stringWithoutLineBreaks);
 
                             if (data.general != null && data.general.clientID != null) {
@@ -155,7 +157,7 @@ var app = new Vue({
             });
 
         },
-        saveConfig: async function () {
+        saveConfig: async function (saveConf) {
 
             var outFile = "";
 
@@ -228,21 +230,23 @@ var app = new Vue({
                 outFile += "\n";
             });
 
-            Neutralino.filesystem.writeFile({
-                fileName: app.configPath,
-                data: outFile
-            }).then(res => {
-                if (res) {
-                    app.showToast('info', "Success", "Config file has been saved", 0);
-                    app.logdata('INFO', "Config saved to: " + app.configPath);
-                }
-                return res;
-            }).catch(err => {
-                app.showToast('error', "Error", "Config file could not be saved", 0);
-                app.logdata('ERROR', err);
-                return err;
-            });
-
+            if (saveConf) {
+                Neutralino.filesystem.writeFile({
+                    fileName: app.configPath,
+                    data: outFile
+                }).then(res => {
+                    if (res) {
+                        app.showToast('info', "Success", "Config file has been saved", 0);
+                        app.logdata('INFO', "Config saved to: " + app.configPath);
+                    }
+                    return res;
+                }).catch(err => {
+                    app.showToast('error', "Error", "Config file could not be saved", 0);
+                    app.logdata('ERROR', err);
+                    return err;
+                });
+            }
+            return outFile;
         },
         fetchAppAssets: function (appID) {
             // This API call runs through a proxy server, because JQUERY blocks calls to the discord API due to missing headers
@@ -257,6 +261,32 @@ var app = new Vue({
         },
 
         // Editor Functions
+        showCodeEditor: async function () {
+            var appRef = app;
+            app.codeEditorActive = !app.codeEditorActive;
+            if (app.codeEditorActive) {
+                app.saveConfig(false).then(res => {
+                    appRef.codeWindow = res;
+                    html_editor = ace.edit("codeditor");
+                    html_editor.setTheme("ace/theme/dracula");
+                    html_editor.getSession().setMode("ace/mode/toml");
+                    html_editor.setFontSize("15px") ;
+                    html_editor.setPrintMarginColumn(false);
+                    html_editor.session.setValue(res);
+                });
+            }
+        },
+        closeCodeEditor: async function() {
+            var appRef = app;
+            app.codeEditorActive = false;
+            var data = TOML.parse(html_editor.session.getValue());
+
+            if (data.general != null && data.general.clientID != null) {
+                appRef.configData = data;
+                appRef.lastClientId = data.general.clientID;
+                appRef.fetchAppAssets(data.general.clientID);
+            }
+        },
         addButton: function (sec) {
 
             var buttonData = {

@@ -62,7 +62,7 @@ $ cd folder/where/you/cloned/this/repo
 $ neu run
 ```
 
-To build the app from source, just replace `neu run` with `neu build`. This will then build the Windows, Linux and Mac executables.
+To build the app from source, just replace `neu run` with `neu build --release`. This will then build the Windows, Linux and Mac executables.
 
 
 ## Contributing

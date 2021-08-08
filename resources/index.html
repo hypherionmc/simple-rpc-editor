@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="assets/css/all.min.css" type="text/css">
     <link rel="stylesheet" href="assets/css/editor.css" type="text/css">
+    <link rel="stylesheet" href="assets/highlight/styles/vs2015.css" type="text/css">
 
 </head>
 <body style="overflow: hidden;">
@@ -49,6 +50,11 @@
             </div>
         </div>
 
+        <div class="code-editor" :style="codeEditorActive ? 'display: block;' : 'display: none;'">
+            <textarea id="codeditor" style="width: 100%; height: 450px; display: none;" class="code-editor w-100 form-control">{{codeWindow}}</textarea>
+            <a href="#" class="btn btn-success" v-on:click="closeCodeEditor" style="position: absolute; bottom: 10px; right: 10px;">Done</a>
+        </div>
+
         <!-- Navbar -->
         <div class="container-fluid nopad" style="height: 100vh;">
 
@@ -83,7 +89,8 @@
             <p class="text-secondary"><i class="fa fa-file-alt text-danger" style="margin-right: 10px;"></i>Editing: {{configPath}}</p>
             <div class="editorbuttonbox">
                 <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" :title="showPreview ? 'Hide Preview' : 'Show Preview'" v-on:click="showPreview = !showPreview"><i class="fa fa-eye" v-if="!showPreview"></i><i class="fa fa-eye-slash" v-if="showPreview"></i></a>
-                <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" title="Save File" v-on:click="saveConfig"><i class="fa fa-save"></i></a>
+                <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" title="Show Code" v-on:click="showCodeEditor"><i class="fa fa-code"></i></a>
+                <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" title="Save File" v-on:click="saveConfig(true)"><i class="fa fa-save"></i></a>
                 <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" title="Load File" v-on:click="loadConfigFile"><i class="fa fa-file"></i></a>
             </div>
 
@@ -213,7 +220,7 @@
         </div>
 
         <!-- Preview -->
-        <div class="rpc-container" :class="showPreview && !showAbout ? '' : ' hiderpc'">
+        <div class="rpc-container" :class="showPreview && !showAbout && !codeEditorActive ? '' : ' hiderpc'">
             <div class="rpc" style="background: #000; width: 320px; height: 250px;" v-if="configPath !== 'Not Loaded'" v-if="configData.general != null">
 
                 <div id="rpcLargeImage" style="background-size: 100% 100%; background-repeat: no-repeat; position: absolute; top: 62px; left: 20px; width: 60px; height: 60px; background: white; border-radius: 10px;" title=""></div>
@@ -231,6 +238,7 @@
             </div>
         </div>
 
+
     </div>
 
     <script src="assets/js/jquery-3.6.0.min.js"></script>
@@ -239,6 +247,10 @@
     <script src="assets/js/neutralino.js"></script>
     <script src="assets/js/fast-toml.js"></script>
     <script src="assets/js/sweetalert2.all.min.js"></script>
+    <script src="assets/ace-builds/src-min/ace.js"></script>
+    <script src="assets/ace-builds/src-min/mode-toml.js"></script>
+    <script src="assets/ace-builds/src-min/theme-dracula.js"></script>
     <script src="assets/js/app-main.js"></script>
+
 </body>
 </html>

@@ -260,3 +260,36 @@ html, body {
     z-index: 5000;
     background: rgb(5, 8, 24);
 }
+
+.code-editor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+    background: rgb(5, 8, 24);
+}
+
+div.code {
+    white-space: pre;
+}
+
+.hljs-ln-numbers {
+    padding-left: 10px !important;
+    padding-right: 5px !important;
+    text-align: right;
+    border-right: 1px solid #333;
+}
+
+.hljs-ln-code {
+    padding-left: 5px !important;
+}
+
+.ace_editor {
+    height: calc(100vh - 65px);
+}
