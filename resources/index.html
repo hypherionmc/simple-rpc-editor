@@ -115,9 +115,21 @@
 
                             <input type="text" class="form-control autoComp" :readonly="key === 'version'" v-if="typeof value !== 'boolean' && key !== 'largeImageKey' && key !== 'smallImageKey'" v-model="configData[activeSection][key]">
 
-                            <select class="form-control custom-select" v-if="key === 'largeImageKey' || key === 'smallImageKey'" v-model="configData[activeSection][key]" v-on:change="updateRPC(activeSection)">
-                                <option v-for="asset in appAssets" :value="asset.name">{{asset.name}}</option>
-                            </select>
+                            <div class="input-group mb-3"  v-if="(key === 'largeImageKey' || key === 'smallImageKey') && !manualEdit">
+                                <select class="form-control custom-select" v-model="configData[activeSection][key]" v-on:change="updateRPC(activeSection)">
+                                    <option v-for="asset in appAssets" :value="asset.name">{{asset.name}}</option>
+                                </select>
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="button" v-on:click="manualEdit = !manualEdit"><i class="fa fa-edit"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-3" v-if="(key === 'largeImageKey' || key === 'smallImageKey') && manualEdit">
+                                <input type="text" class="form-control" v-model="configData[activeSection][key]" v-on:change="updateRPC(activeSection)" style="border-radius: 5px 0px 0px 5px;">
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="button" v-on:click="manualEdit = !manualEdit"><i class="fa fa-edit"></i></button>
+                                </div>
+                            </div>
 
                         </div>
                     </div>

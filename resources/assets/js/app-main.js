@@ -1,4 +1,5 @@
 var html_editor;
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -17,6 +18,7 @@ var app = new Vue({
         codeWindow: "",
         codeEditorActive: false,
         lastActiveSection: 'general',
+        manualEdit: false,
         aboutInfo: {os: NL_OS, nlversion: NL_VERSION, appver: NL_APPVERSION},
         showAbout: false
     },
