@@ -19,6 +19,9 @@ var app = new Vue({
         codeEditorActive: false,
         lastActiveSection: 'general',
         manualEdit: false,
+        showChangelog: true,
+        internalVer: 4,
+        lastInternalVer: 3,
         aboutInfo: {os: NL_OS, nlversion: NL_VERSION, appver: NL_APPVERSION},
         showAbout: false
     },
@@ -34,10 +37,16 @@ var app = new Vue({
             bucket: 'appsettings'
         }).then(response => {
             appRef.showPreview = response.showpreview;
+            appRef.showChangelog = response.showchangelog;
+            appRef.lastInternalVer = response.internalver;
             return response;
         }).catch(err => {
             console.error(err);
         });
+
+        if (appRef.lastInternalVer !== appRef.internalVer) {
+            appRef.showChangelog = true;
+        }
 
         setTimeout(async function() {
             $(".splashscreen").fadeOut("slow", function () {
@@ -50,12 +59,7 @@ var app = new Vue({
             appRef.timeInMs += 1000;
             $(".rpcTimer").text(msToTime(appRef.timeInMs) + " elapsed");
             if (appRef.lastShowPreview !== appRef.showPreview) {
-                await Neutralino.storage.putData({
-                    bucket: 'appsettings',
-                    data: JSON.stringify({
-                        showpreview: appRef.showPreview
-                    })
-                });
+                appRef.persistSettings(appRef);
                 appRef.lastShowPreview = appRef.showPreview;
             }
         }, 1000);
@@ -475,6 +479,21 @@ var app = new Vue({
                     return "fa fa-globe text-pink";
             }
 
+        },
+        closeChangelog: async function () {
+            var appRef = this;
+            appRef.persistSettings(appRef);
+            appRef.showChangelog = false;
+        },
+        persistSettings: async function (appRef) {
+            await Neutralino.storage.putData({
+                bucket: 'appsettings',
+                data: JSON.stringify({
+                    showpreview: appRef.showPreview,
+                    showchangelog: appRef.showChangelog,
+                    internalver: appRef.internalVer
+                })
+            });
         },
         dummyVars: function (inputText) {
 

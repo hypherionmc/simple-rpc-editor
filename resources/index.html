@@ -55,6 +55,17 @@
             <a href="#" class="btn btn-success" v-on:click="closeCodeEditor" style="position: absolute; bottom: 10px; right: 10px;">Done</a>
         </div>
 
+        <div class="code-editor" :style="showChangelog && isConfigLoaded ? 'display: block;' : 'display: none;'">
+            <h4 class="text-center">What's New</h4>
+            <textarea id="changelog" style="width: 100%; height: 95%; background: transparent !important; color: white; border: 0px;" readonly="readonly" class="w-100 form-control">
+            Version 1.4 Beta:
+
+                * Added a Changelog Window
+                * Added the ability to edit Image Keys when they don't show in the dropdown
+            </textarea>
+            <a href="#" class="btn btn-success" v-on:click="closeChangelog" style="position: absolute; bottom: 10px; right: 10px;">Done</a>
+        </div>
+
         <!-- Navbar -->
         <div class="container-fluid nopad" style="height: 100vh;">
 
@@ -232,7 +243,7 @@
         </div>
 
         <!-- Preview -->
-        <div class="rpc-container" :class="showPreview && !showAbout && !codeEditorActive ? '' : ' hiderpc'">
+        <div class="rpc-container" :class="showPreview && !showAbout && !codeEditorActive && !showChangelog ? '' : ' hiderpc'">
             <div class="rpc" style="background: #000; width: 320px; height: 250px;" v-if="configPath !== 'Not Loaded'" v-if="configData.general != null">
 
                 <div id="rpcLargeImage" style="background-size: 100% 100%; background-repeat: no-repeat; position: absolute; top: 62px; left: 20px; width: 60px; height: 60px; background: white; border-radius: 10px;" title=""></div>
@@ -249,7 +260,6 @@
                 </div>
             </div>
         </div>
-
 
     </div>
 
