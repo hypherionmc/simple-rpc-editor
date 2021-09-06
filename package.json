@@ -1,0 +1,24 @@
+{
+  "name": "simple-rpc-editor",
+  "version": "2.0.0",
+  "description": "Simple RPC Config Editor",
+  "main": "index.js",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "bundle": "tauri build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hypherionmc/simple-rpc-editor.git"
+  },
+  "author": "HypherionSA",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hypherionmc/simple-rpc-editor/issues"
+  },
+  "homepage": "https://github.com/hypherionmc/simple-rpc-editor#readme",
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.0.0-beta.10"
+  }
+}

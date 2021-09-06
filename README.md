@@ -2,7 +2,9 @@
 
 ---
 
-[![Build Status](https://ci.explodingcreeper.me/buildStatus/icon?job=Simple+RPC+Config+Editor%2FDev+Builds)](https://ci.explodingcreeper.me/view/HypherionMC's%20Projects/job/Simple%20RPC%20Config%20Editor/job/Dev%20Builds/)
+### This is an experimental build and is not yet intended for use other than testing
+
+___
 
 ### What the heck is this?
 
@@ -36,7 +38,7 @@ This app works on Windows, Linux and MacOS
 
 #### _Backend_
 
-* [Neutralino](https://neutralino.js.org/) -> The main framework that interacts with the OS as well as the app used to package the executables
+* [Tauri](https://tauri.studio/) -> The main framework that interacts with the OS as well as the app used to package the executables
 
 #### _Additional Libraries/Plugins_
 
@@ -46,24 +48,7 @@ This app works on Windows, Linux and MacOS
 
 ## Building from source
 
-#### Required Software
-
-* Node.js v14 or newer
-* NPM
-
-#### Setting up an environment
-
-* Clone/download this repo to your pc
-* Then run the following commands
-
-```bash
-$ npm i -g @neutralinojs/neu
-$ cd folder/where/you/cloned/this/repo
-$ neu run
-```
-
-To build the app from source, just replace `neu run` with `neu build --release`. This will then build the Windows, Linux and Mac executables.
-
+### Coming soon
 
 ## Contributing
 
@@ -71,9 +56,5 @@ Contributions are welcome, and I have no specific formatting requirements, just 
 
 
 ---
-
-## Licenses
-
-* [NeutralinoJS](https://github.com/neutralinojs/neutralinojs/blob/master/LICENSE) -> MIT LICENSE
 
 This app and code is licensed under the MIT license, but I do request that you change the name if you plan on releasing this yourself.

@@ -1,9 +1,0 @@
-echo "Uploading to Github Releases"
-
-echo "Creating a new release in Github"
-github-release release --user hypherionmc --repo simple-rpc-editor --tag ${BUILD_DISPLAY_NAME} --name "Release ${BUILD_DISPLAY_NAME}" --description "COMING SOON"
-
-echo "Uploading the artifacts onto Github"
-github-release upload --user hypherionmc --repo simple-rpc-editor --tag ${BUILD_DISPLAY_NAME} --name "simple-rpc-editor-win-1.${BUILD_NUMBER}-rel.zip" --file release/simple-rpc-editor-win-1.${BUILD_NUMBER}-rel.zip
-github-release upload --user hypherionmc --repo simple-rpc-editor --tag ${BUILD_DISPLAY_NAME} --name "simple-rpc-editor-mac-1.${BUILD_NUMBER}-rel.zip" --file release/simple-rpc-editor-mac-1.${BUILD_NUMBER}-rel.zip
-github-release upload --user hypherionmc --repo simple-rpc-editor --tag ${BUILD_DISPLAY_NAME} --name "simple-rpc-editor-linux-1.${BUILD_NUMBER}-rel.zip" --file release/simple-rpc-editor-linux-1.${BUILD_NUMBER}-rel.zip

@@ -1,0 +1,73 @@
+{
+  "package": {
+    "productName": "simple-rpc-editor",
+    "version": "2.0.0"
+  },
+  "build": {
+    "distDir": "src",
+    "devPath": "src",
+    "beforeDevCommand": "",
+    "beforeBuildCommand": "",
+    "withGlobalTauri": true
+  },
+  "tauri": {
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "me.hypherionmc.simplerpc",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "resources": ["src/assets/*"],
+      "externalBin": [],
+      "copyright": "©2021, HypherionMC/SA",
+      "category": "DeveloperTool",
+      "shortDescription": "A simple to use config Editor for the Simple RPC Discord mod",
+      "longDescription": "",
+      "deb": {
+        "depends": [],
+        "useBootstrapper": false
+      },
+      "macOS": {
+        "frameworks": [],
+        "minimumSystemVersion": "",
+        "useBootstrapper": false,
+        "exceptionDomain": "",
+        "signingIdentity": null,
+        "entitlements": null
+      },
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://simple-rpc-updater.vercel.app/update/{{target}}/{{current_version}}/"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY1REEyNzc0N0QyNUQ5OUIKUldTYjJTVjlkQ2ZhWlRvb3hFVlRLY2Yyc2dadm5RUHlnWG43TmZZNWVHRlhjNlNDTTQrVS9VSlQK"
+    },
+    "allowlist": {
+      "all": true
+    },
+    "windows": [
+      {
+        "title": "Simple RPC Editor",
+        "width": 800,
+        "height": 600,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self' img-src: 'self'"
+    }
+  }
+}

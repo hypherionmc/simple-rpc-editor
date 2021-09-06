@@ -1,4 +1,7 @@
 var html_editor;
+const tauri = window.__TAURI__;
+const toml = window.fasttoml;
+const logger = window.LoggerTauri;
 
 var app = new Vue({
     el: '#app',
@@ -10,7 +13,7 @@ var app = new Vue({
         activeSection: 'general',
         timeInMs: 0,
         configPath: "Not Loaded",
-        toast: {title: '', body: '', class: 'error'},
+        toast: { title: '', body: '', class: 'error' },
         showPreview: true,
         lastShowPreview: true,
         lastConfigData: [],
@@ -19,30 +22,36 @@ var app = new Vue({
         codeEditorActive: false,
         lastActiveSection: 'general',
         manualEdit: false,
-        showChangelog: true,
-        internalVer: 4,
-        lastInternalVer: 3,
-        aboutInfo: {os: NL_OS, nlversion: NL_VERSION, appver: NL_APPVERSION},
+        showChangelog: false,
+        internalVer: 5,
+        lastInternalVer: 4,
+        aboutInfo: { os: "Win", nlversion: "0", appver: "0" },
+        updateAvailable: false,
         showAbout: false
     },
     created: async function() {
         var appRef = this;
-        Neutralino.init();
 
         $("body").tooltip({ selector: '[data-toggle=tooltip]' });
         $('.toast').toast('hide');
-        appRef.setWindowTitle();
 
-        Neutralino.storage.getData({
-            bucket: 'appsettings'
-        }).then(response => {
-            appRef.showPreview = response.showpreview;
-            appRef.showChangelog = response.showchangelog;
-            appRef.lastInternalVer = response.internalver;
-            return response;
-        }).catch(err => {
-            console.error(err);
-        });
+        appRef.setWindowTitle();
+        logger.init("simple-rpc", true);
+
+        appRef.aboutInfo = {
+            os: (await tauri.os.type()).replace("_NT", ""),
+            nlversion: await tauri.app.getTauriVersion(),
+            appver: await tauri.app.getVersion()
+        };
+
+        appRef.logdata("INFO", "OS: " + (await tauri.os.type()).replace("_NT", "") + " (" + await tauri.os.arch() + ")");
+        appRef.logdata("INFO", "Tauri Version: " + await tauri.app.getTauriVersion());
+        appRef.logdata("INFO", "App Version: " + await tauri.app.getVersion());
+        appRef.logdata("", "");
+
+        appRef.showPreview = localStorage.getItem("showpreview") === 'true';
+        appRef.showChangelog = localStorage.getItem("showcl") === 'true';
+        appRef.lastInternalVer = parseInt(localStorage.getItem("internalver"));
 
         if (appRef.lastInternalVer !== appRef.internalVer) {
             appRef.showChangelog = true;
@@ -56,15 +65,18 @@ var app = new Vue({
         }, 4000);
 
         setInterval(async function () {
+
             appRef.timeInMs += 1000;
             $(".rpcTimer").text(msToTime(appRef.timeInMs) + " elapsed");
             if (appRef.lastShowPreview !== appRef.showPreview) {
                 appRef.persistSettings(appRef);
                 appRef.lastShowPreview = appRef.showPreview;
             }
+
         }, 1000);
 
         setInterval(async function () {
+
             if (appRef.configData !== appRef.lastConfigData || appRef.activeSection !== appRef.lastActiveSection) {
                 console.log("Updating RPC");
                 appRef.updateRPC(appRef.activeSection);
@@ -84,14 +96,17 @@ var app = new Vue({
 
         // Window Methods
         setWindowTitle: async function() {
-            await Neutralino.window.setTitle('Simple RPC Editor Beta - ' + NL_APPVERSION);
+
+            tauri.window.getCurrent().setTitle('Simple RPC Editor Beta - ' + await tauri.app.getVersion());
+
         },
         openexternal: async function(urlToOpen) {
-            await Neutralino.app.open({
-                url: urlToOpen
-            });
+
+            await tauri.shell.open(urlToOpen);
+
         },
         showToast: function (type, title, body, timeout) {
+
             var appRef = app;
             appRef.toast.title = title;
             appRef.toast.body = body;
@@ -110,56 +125,55 @@ var app = new Vue({
                     break;
             }
             $('.toast').toast('show');
+
         },
         logdata: async function(type, data) {
-            await Neutralino.debug.log({
-                type: type,
-                message: data
-            });
+
+            logger.log(type, data);
+            console.log(data);
+
         },
 
         // Config Functions
         loadConfigFile: async function() {
+
             var appRef = app;
-            Neutralino.os.showDialogOpen({
-                title: "Select Simple RPC Config File",
-                isDirectoryMode: false,
-                filter: ["toml"]
-            }).then(response => {
-                if (response.selectedEntry != null && response.success) {
 
-                    if (response.selectedEntry.endsWith(".toml")) {
-                        Neutralino.filesystem.readFile({
-                            fileName: response.selectedEntry
-                        }).then(tomlFile => {
-
+            tauri.dialog.open({
+                defaultPath: null,
+                filters: [{
+                    name: "Simple RPC Toml File",
+                    extensions: ["toml"]
+                }],
+                multiple: false,
+                directory: false,
+            }).then(file => {
+                if (file !== "") {
+                    if (file.endsWith(".toml")) {
+                        tauri.fs.readTextFile(file, {}).then(tomlFile => {
                             // Fix for some windows installs adding extra line breaks, breaking the editor
-                            var stringWithoutLineBreaks = tomlFile.data.replace(/\s*$/, "");
-                            var data = TOML.parse(stringWithoutLineBreaks);
+                            var stringWithoutLineBreaks = tomlFile.replace(/\s*$/, "");
+                            var data = toml.parse(stringWithoutLineBreaks);
 
                             if (data.general != null && data.general.clientID != null) {
                                 appRef.configData = data;
-                                appRef.configPath = response.selectedEntry;
+                                appRef.configPath = file;
                                 appRef.isConfigLoaded = true;
                                 appRef.lastClientId = data.general.clientID;
                                 appRef.fetchAppAssets(data.general.clientID);
-
                             } else {
                                 appRef.showToast('error', "Error", 'Selected file is not a Simple RPC Config file or the file is corrupt!', 10000);
                             }
                             return tomlFile;
+                        }).catch(err => {
+                            appRef.logdata("ERROR", err);
+                            return err;
                         });
                     } else {
                         appRef.showToast('error', "Error", 'Selected file is not a Simple RPC Config file or the file is corrupt!', 10000);
                     }
-
                 }
-                return response;
-            }).catch(err => {
-                appRef.showToast('error', "Error", 'Failed to load Config File', 10000);
-                appRef.logdata('INFO', "Catch: " + err);
-                console.error(err);
-                return err;
+                return file;
             });
 
         },
@@ -237,15 +251,12 @@ var app = new Vue({
             });
 
             if (saveConf) {
-                Neutralino.filesystem.writeFile({
-                    fileName: app.configPath,
-                    data: outFile
-                }).then(res => {
-                    if (res) {
-                        app.showToast('info', "Success", "Config file has been saved", 0);
-                        app.logdata('INFO', "Config saved to: " + app.configPath);
-                    }
-                    return res;
+                tauri.fs.writeFile({
+                    contents: outFile,
+                    path: app.configPath
+                }, null).then(res => {
+                    app.showToast('info', "Success", "Config file has been saved", 0);
+                    app.logdata('INFO', "Config saved to: " + app.configPath);
                 }).catch(err => {
                     app.showToast('error', "Error", "Config file could not be saved", 0);
                     app.logdata('ERROR', err);
@@ -253,8 +264,10 @@ var app = new Vue({
                 });
             }
             return outFile;
+
         },
         fetchAppAssets: function (appID) {
+
             // This API call runs through a proxy server, because JQUERY blocks calls to the discord API due to missing headers
             // The proxy server is powered by this code: https://github.com/jesperorb/node-api-proxy
             $.ajax({
@@ -264,10 +277,12 @@ var app = new Vue({
                 app.appAssets = data;
                 app.logdata('INFO', "Successfully fetched discord assets for app with id: " + appID)
             });
+
         },
 
         // Editor Functions
         showCodeEditor: async function () {
+
             var appRef = app;
             app.codeEditorActive = !app.codeEditorActive;
             if (app.codeEditorActive) {
@@ -281,17 +296,20 @@ var app = new Vue({
                     html_editor.session.setValue(res);
                 });
             }
+
         },
         closeCodeEditor: async function() {
+
             var appRef = app;
             app.codeEditorActive = false;
-            var data = TOML.parse(html_editor.session.getValue());
+            var data = toml.parse(html_editor.session.getValue());
 
             if (data.general != null && data.general.clientID != null) {
                 appRef.configData = data;
                 appRef.lastClientId = data.general.clientID;
                 appRef.fetchAppAssets(data.general.clientID);
             }
+
         },
         addButton: function (sec) {
 
@@ -481,19 +499,18 @@ var app = new Vue({
 
         },
         closeChangelog: async function () {
+
             var appRef = this;
-            appRef.persistSettings(appRef);
             appRef.showChangelog = false;
+            appRef.persistSettings(appRef);
+
         },
         persistSettings: async function (appRef) {
-            await Neutralino.storage.putData({
-                bucket: 'appsettings',
-                data: JSON.stringify({
-                    showpreview: appRef.showPreview,
-                    showchangelog: appRef.showChangelog,
-                    internalver: appRef.internalVer
-                })
-            });
+
+            localStorage.setItem("showpreview", appRef.showPreview.toString());
+            localStorage.setItem("showcl", appRef.showChangelog.toString());
+            localStorage.setItem("internalver", appRef.internalVer.toString());
+
         },
         dummyVars: function (inputText) {
 
@@ -513,9 +530,11 @@ var app = new Vue({
             inputText = inputText.replace("%pack%", "Dummy Pack");
 
             return inputText;
+
         }
     },
     filters: {
+
         camelToNormal: function (value) {
             var normalString = value.replace(/([a-z])([A-Z])/g, '$1 $2');
             return normalString.charAt(0).toUpperCase() + normalString.slice(1);
@@ -524,6 +543,7 @@ var app = new Vue({
             var normalString = value.replace("_", " ");
             return normalString.charAt(0).toUpperCase() + normalString.slice(1);
         }
+
     }
 });
 

@@ -1,4 +1,7 @@
 .idea
-temp
-dist
-bin
+package-lock.json
+node_modules
+src-tauri/target
+src-tauri/WixTools
+src-tauri/Cargo.lock
+src-tauri/logs

@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Simple RPC Config Editor</title>
 
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="assets/css/all.min.css" type="text/css">
-    <link rel="stylesheet" href="assets/css/editor.css" type="text/css">
-    <link rel="stylesheet" href="assets/highlight/styles/vs2015.css" type="text/css">
+    <link rel="stylesheet" href="./assets/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="./assets/css/all.min.css" type="text/css">
+    <link rel="stylesheet" href="./assets/css/editor.css" type="text/css">
 
 </head>
 <body style="overflow: hidden;">
@@ -17,7 +16,7 @@
 
         <div class="splashscreen">
             <div class="text-center">
-                <img src="assets/img/rpc_edit.svg" />
+                <img src="./assets/img/rpc_edit.svg" />
                 <br><br>
                 <h4 data-text="Loading..." class="loading-animation">Loading...</h4>
                 <br>
@@ -26,7 +25,7 @@
 
         <div class="noconfigsplash" v-if="!isConfigLoaded">
             <div class="text-center">
-                <img src="assets/img/rpc_edit.svg" />
+                <img src="./assets/img/rpc_edit.svg" />
                 <br><br>
                 <p><b>Please choose a config file to get started</b></p>
                 <a href="#" v-on:click="loadConfigFile" class="btn btn-outline-info btn-sm">Load Config</a>
@@ -37,11 +36,11 @@
 
         <div class="aboutsplash" v-if="showAbout">
             <div class="text-center">
-                <img src="assets/img/rpc_edit.svg" />
+                <img src="./assets/img/rpc_edit.svg" />
                 <br><br>
-                <p><b>Version: {{aboutInfo.appver}} | NeutralinoJS Version: {{aboutInfo.nlversion}} | OS: {{aboutInfo.os}}</b></p><br>
+                <p><b>Version: {{aboutInfo.appver}} | Tauri Version: {{aboutInfo.nlversion}} | OS: {{aboutInfo.os}}</b></p><br>
                 <p><b>Technologies:</b></p>
-                <p><a href="#" v-on:click="openexternal('https://getbootstrap.com/')">Bootstrap 4</a>, <a href="#" v-on:click="openexternal('https://vuejs.org/')">VUE.js</a>, <a href="#" v-on:click="openexternal('https://fontawesome.com/')">Font Awesome</a>, <a href="#" v-on:click="openexternal('https://neutralino.js.org/')">NeutralinoJS</a>, <a href="#" v-on:click="openexternal('https://github.com/hypherionmc/fast-toml/')">Fast-Toml</a></p><br>
+                <p><a href="#" v-on:click="openexternal('https://getbootstrap.com/')">Bootstrap 4</a>, <a href="#" v-on:click="openexternal('https://vuejs.org/')">VUE.js</a>, <a href="#" v-on:click="openexternal('https://fontawesome.com/')">Font Awesome</a>, <a href="#" v-on:click="openexternal('https://tauri.studio/')">Tauri</a>, <a href="#" v-on:click="openexternal('https://github.com/hypherionmc/fast-toml/')">Fast-Toml</a></p><br>
                 <p><b>License: </b></p>
                 <p>This app and code is licensed under the MIT license. You can read the full license <a href="#" v-on:click="openexternal('https://github.com/hypherionmc/simple-rpc-editor/blob/master/LICENSE')">HERE</a></p><br>
                 <p><b>Contributors:</b></p>
@@ -58,10 +57,10 @@
         <div class="code-editor" :style="showChangelog && isConfigLoaded ? 'display: block;' : 'display: none;'">
             <h4 class="text-center">What's New</h4>
             <textarea id="changelog" style="width: 100%; height: 95%; background: transparent !important; color: white; border: 0px;" readonly="readonly" class="w-100 form-control">
-            Version 1.4 Beta:
+            Version 2.0.0 Beta:
 
-                * Added a Changelog Window
-                * Added the ability to edit Image Keys when they don't show in the dropdown
+                * Switched to a new Framework
+                * New Auto Updater
             </textarea>
             <a href="#" class="btn btn-success" v-on:click="closeChangelog" style="position: absolute; bottom: 10px; right: 10px;">Done</a>
         </div>
@@ -71,7 +70,7 @@
 
             <div class="navbar-vertical" v-if="isConfigLoaded">
                 <div class="logobox">
-                    <a href="#" v-on:click="openexternal('https://github.com/hypherionmc/simple-rpc-editor')"><img src="assets/img/rpc_edit_horizontal.svg" style="width: 100%"/></a>
+                    <a href="#" v-on:click="openexternal('https://github.com/hypherionmc/simple-rpc-editor')"><img src="./assets/img/rpc_edit_horizontal.svg" style="width: 100%"/></a>
                 </div>
 
                 <div class="linkbox">
@@ -103,6 +102,7 @@
                 <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" title="Show Code" v-on:click="showCodeEditor"><i class="fa fa-code"></i></a>
                 <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" title="Save File" v-on:click="saveConfig(true)"><i class="fa fa-save"></i></a>
                 <a href="#" class="editor-button" data-toggle="tooltip" data-placement="bottom" title="Load File" v-on:click="loadConfigFile"><i class="fa fa-file"></i></a>
+                <a href="#" class="editor-button text-success" data-toggle="tooltip" data-placement="bottom" title="Update Available" v-on:click="runUpdater" v-if="updateAvailable"><i class="fa fa-download"></i></a>
             </div>
 
         </div>
@@ -263,16 +263,16 @@
 
     </div>
 
-    <script src="assets/js/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/vue.min.js"></script>
-    <script src="assets/js/neutralino.js"></script>
-    <script src="assets/js/fast-toml.js"></script>
-    <script src="assets/js/sweetalert2.all.min.js"></script>
-    <script src="assets/ace-builds/src-min/ace.js"></script>
-    <script src="assets/ace-builds/src-min/mode-toml.js"></script>
-    <script src="assets/ace-builds/src-min/theme-dracula.js"></script>
-    <script src="assets/js/app-main.js"></script>
+    <script src="./assets/js/fast-toml.js"></script>
+    <script src="./assets/js/logger.tauri.js"></script>
+    <script src="./assets/js/jquery-3.6.0.min.js"></script>
+    <script src="./assets/js/bootstrap.bundle.min.js"></script>
+    <script src="./assets/js/sweetalert2.all.min.js"></script>
+    <script src="./assets/ace-builds/src-min/ace.js"></script>
+    <script src="./assets/ace-builds/src-min/mode-toml.js"></script>
+    <script src="./assets/ace-builds/src-min/theme-dracula.js"></script>
+    <script src="./assets/js/vue.min.js"></script>
+    <script src="./assets/js/app-main.js"></script>
 
 </body>
 </html>
