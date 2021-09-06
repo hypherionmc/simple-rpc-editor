@@ -54,7 +54,6 @@ This app works on Windows, Linux and MacOS
 
 Contributions are welcome, and I have no specific formatting requirements, just try to match mine where possible (even if it's terrible).
 
-
 ---
 
 This app and code is licensed under the MIT license, but I do request that you change the name if you plan on releasing this yourself.
