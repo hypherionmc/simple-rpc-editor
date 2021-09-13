@@ -579,6 +579,7 @@ function pad (str, max) {
 
 function isNumeric(input) {
 
-    return input.startsWith("0") || input.startsWith("1") || input.startsWith("2") || input.startsWith("3") || input.startsWith("4") || input.startsWith("5") || input.startsWith("6") || input.startsWith("7") || input.startsWith("8") || input.startsWith("9");
+    const reg = new RegExp('^[0-9]+$');
+    return reg.test(input);
 
 }
