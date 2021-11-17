@@ -1,8 +1,8 @@
-name: "dev"
+name: "release"
 on:
   push:
     branches:
-      - master
+      - release
 jobs:
   publish-rpc:
     env:
@@ -38,7 +38,7 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         with:
           tagName: __VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-          releaseName: "Simple RPC Editor Beta v__VERSION__ (Dev)"
+          releaseName: "Simple RPC Editor Beta v__VERSION__"
           releaseBody: "Coming soon"
           releaseDraft: true
-          prerelease: true
+          prerelease: false

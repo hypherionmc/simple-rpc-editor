@@ -2,10 +2,6 @@
 
 ---
 
-### This is an experimental build and is not yet intended for use other than testing
-
-___
-
 ### What the heck is this?
 
 This program/piece of software was created to simplify the process of editing [Simple RPC](https://www.curseforge.com/minecraft/mc-mods/simple-discord-rpc) config files.
@@ -14,15 +10,23 @@ The aim of this software is to allow you to edit config files without having to 
 
 ### Supported Config Files
 
+* Simple RPC Client/Translated Config Files
+* Simple RPC Server Entries Config Files
+
 **Please note that this editor only supports the new TOML based config files, and not the old JSON Format files**
 
 ### Known Issues
 
+* The RPC Preview always shows MINECRAFT as the running game. The discord API does not provide a way to get the real name of the app, so I cannot do much about this!
 * Comments are removed from saved Config files -> This is a FAST-TOML limitation, and will be fixed in the future, but it's not a priority at this time
 
 ## Installation
 
-This app is designed to be portable, so no installation is required. Simply grab the latest version from the RELEASES section, unzip the file and run the app. No extra dependencies are needed.
+~~This app is designed to be portable, so no installation is required. Simply grab the latest version from the RELEASES section, unzip the file and run the app.~~
+
+Since the update to the new framework, only installers are available. I may add a workaround in the future, but for now, you need to use the installer. The app should auto-update as new versions release.
+
+No extra dependencies are needed.
 
 ## Supported Platforms
 
