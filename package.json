@@ -1,24 +1,38 @@
 {
-  "name": "simple-rpc-editor",
-  "version": "2.0.0",
-  "description": "Simple RPC Config Editor",
-  "main": "index.js",
+  "name": "simple-rpc-vue",
+  "version": "2.0.1",
+  "private": true,
   "scripts": {
-    "tauri": "tauri",
-    "dev": "tauri dev",
-    "bundle": "tauri build"
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "tauri:build": "vue-cli-service tauri:build",
+    "tauri:serve": "vue-cli-service tauri:serve"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hypherionmc/simple-rpc-editor.git"
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-brands-svg-icons": "^5.15.4",
+    "@fortawesome/free-regular-svg-icons": "^5.15.4",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/vue-fontawesome": "^2.0.2",
+    "@hypherionmc/toml-patch": "^0.2.5",
+    "@tauri-apps/api": "^1.0.0-beta.8",
+    "axios": "^0.21.4",
+    "bootstrap": "^5.1.1",
+    "bootstrap-vue": "^2.21.2",
+    "core-js": "^3.6.5",
+    "jquery": "^3.6.0",
+    "lodash": "^4.17.21",
+    "vue": "^2.6.11",
+    "vue-nice-scrollbar": "^2.0.1",
+    "vue-select": "^3.13.0",
+    "vue-sweetalert2": "^5.0.2",
+    "vue-toast-notification": "^0.6.2"
   },
-  "author": "HypherionSA",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/hypherionmc/simple-rpc-editor/issues"
-  },
-  "homepage": "https://github.com/hypherionmc/simple-rpc-editor#readme",
   "devDependencies": {
-    "@tauri-apps/cli": "^1.0.0-beta.10"
+    "@vue/cli-service": "~4.5.0",
+    "brace": "^0.11.1",
+    "vue-cli-plugin-tauri": "~1.0.0-beta.6",
+    "vue-template-compiler": "^2.6.11",
+    "vue2-ace-editor": "0.0.15"
   }
 }
