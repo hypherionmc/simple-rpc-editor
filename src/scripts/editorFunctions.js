@@ -31,9 +31,14 @@ const EditorFunctions = {
 							outRef.configData.new = data;
 							outRef.configData.configPath = file;
 							outRef.configData.isConfigLoaded = true;
+							outRef.configData.configType = "NORMAL";
 							this.fetchDiscordAssets(data.general.clientID, outRef);
-						} else {
-
+						} else if (data.entry != null) {
+							outRef.configData.old = tomlFile;
+							outRef.configData.new = data;
+							outRef.configData.configPath = file;
+							outRef.configData.isConfigLoaded = true;
+							outRef.configData.configType = "SERVER";
 						}
 					}).catch(err => {
 						console.error(err);
@@ -116,6 +121,56 @@ const EditorFunctions = {
 				}
 
 			});
+
+			outFile += "\n";
+			outFile = outFile.toString().replace(null, '""');
+		});
+
+		if (save) {
+			fs.writeFile({
+				contents: outFile,
+				path: appRef.configData.configPath
+			}, null).then(res => {
+				AppFunctions.showToast(appRef,"Error", "Config has been saved", 'success');
+				AppFunctions.logData('INFO', "Config saved to: " + appRef.configData.configPath).then(r => {});
+			}).catch(err => {
+				AppFunctions.showToast(appRef,"Error", "Config file could not be saved", 'error');
+				AppFunctions.logData('ERROR', err).then(r => {});
+				return err;
+			});
+		}
+		return outFile;
+
+	},
+
+	saveOverrideConfig: async function(appRef, save) {
+		let outFile = "";
+
+		$.each(appRef.configData.new, function (key, value) {
+
+			if (key !== 'entry' && typeof value === "string" && !EditorUtils.isNumeric(value)) {
+				outFile += `${key} = "${value}"\n`;
+			} else if (key !== 'entry') {
+				outFile += `${key} = ${value}\n`;
+			}
+
+			if (key === "entry") {
+
+				if (value.length > 0) {
+
+					for (let i = 0; i < value.length; i++) {
+						outFile += `[[entry]]\n\t\tip = "${value[i].ip}"\n\t\tdescription = "${value[i].description}"\n\t\tstate = "${value[i].state}"\n\t\tlargeImageKey = "${value[i].largeImageKey}"\n\t\tlargeImageText = "${value[i].largeImageText}"\n\t\tsmallImageKey = "${value[i].smallImageKey}"\n\t\tsmallImageText = "${value[i].smallImageText}"\n`;
+					}
+
+					if (value.length > 1) {
+						outFile += `\n`;
+					}
+
+				} else {
+					outFile += `entry = []\n`;
+				}
+
+			}
 
 			outFile += "\n";
 			outFile = outFile.toString().replace(null, '""');
@@ -247,18 +302,63 @@ const EditorFunctions = {
 			}
 		});
 	},
+	addServer(appRef) {
+		var worldData = {
+			ip: "",
+			description: "",
+			state: "",
+			largeImageKey: "",
+			largeImageText: "",
+			smallImageKey: "",
+			smallImageText: ""
+		};
+		appRef.configData.new.entry.push(worldData);
+	},
+	deleteServer: function (appRef, index) {
+		appRef.$swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, delete it!'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				appRef.configData.new.entry.splice(index, 1);
+				appRef.$swal.fire(
+					'Deleted!',
+					'The entry has been deleted',
+					'success'
+				)
+			}
+		});
+	},
 
 	showCodeEditor: async function(appRef) {
 		appRef.codeEditor.codeEditorActive = true;
-		this.saveConfig(appRef, false).then(res => {
-			appRef.codeEditor.codeEditorContent = res;
-			html_editor = ace.edit("codeditor");
-			html_editor.setTheme(appRef.darkMode ? "ace/theme/dracula" : "ace/theme/chrome");
-			html_editor.getSession().setMode("ace/mode/toml");
-			html_editor.setFontSize("15px") ;
-			html_editor.setPrintMarginColumn(false);
-			html_editor.session.setValue(res);
-		});
+
+		if (appRef.configType === 'NORMAL') {
+			this.saveConfig(appRef, false).then(res => {
+				appRef.codeEditor.codeEditorContent = res;
+				html_editor = ace.edit("codeditor");
+				html_editor.setTheme(appRef.darkMode ? "ace/theme/dracula" : "ace/theme/chrome");
+				html_editor.getSession().setMode("ace/mode/toml");
+				html_editor.setFontSize("15px") ;
+				html_editor.setPrintMarginColumn(false);
+				html_editor.session.setValue(res);
+			});
+		} else {
+			this.saveOverrideConfig(appRef, false).then(res => {
+				appRef.codeEditor.codeEditorContent = res;
+				html_editor = ace.edit("codeditor");
+				html_editor.setTheme(appRef.darkMode ? "ace/theme/dracula" : "ace/theme/chrome");
+				html_editor.getSession().setMode("ace/mode/toml");
+				html_editor.setFontSize("15px") ;
+				html_editor.setPrintMarginColumn(false);
+				html_editor.session.setValue(res);
+			});
+		}
 	},
 	closeCodeEditor: async function(appRef) {
 		appRef.codeEditor.codeEditorActive = false;
@@ -266,6 +366,10 @@ const EditorFunctions = {
 
 		if (data.general != null && data.general.clientID != null) {
 			appRef.configData.new = data;
+			appRef.configType = "NORMAL";
+		} else if (data.entry != null) {
+			appRef.configData.new = data;
+			appRef.configType = "SERVER";
 		}
 	}
 

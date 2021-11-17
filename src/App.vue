@@ -21,12 +21,19 @@
 				</div>
 				<hr class="horizontal" :class="darkMode ? 'dark' : 'light'" />
 
-				<div class="linkbox">
+				<div class="linkbox" v-if="configData.configType === 'NORMAL'">
 					<a v-for="(section, key) in configData.new" href="#" :class="[darkMode ? 'dark' : 'light', appVars.activeSection.current === key ? 'active' : '']" @click="appVars.activeSection.current = key">
 						<font-awesome-icon :icon="['fas', getSectionIcon(key)]" />
 						<span class="nav-link-text">{{key | sectionToNormal}}</span>
 					</a>
 				</div>
+
+        <div class="linkbox" v-if="configData.configType === 'SERVER'">
+          <a href="#" :class="[darkMode ? 'dark' : 'light', 'active']">
+            <font-awesome-icon :icon="['fas', getSectionIcon('general')]" />
+            <span class="nav-link-text">General</span>
+          </a>
+        </div>
 
 				<a href="#" class="coffee-button" id="coffee" @click="openExternal('https://buymeacoffee.com/hypherionsa')">
 					<font-awesome-icon :icon="['fas', 'coffee']" /> Buy Me A Coffee
@@ -58,7 +65,7 @@
 					<b>{{configData.configPath}}</b>
 				</div>
 				<div class="app-buttons">
-					<a href="#" class="editor-button" v-b-tooltip.left :title="appSettings.showPreview ? 'Hide Preview' : 'Show Preview'" v-on:click='appSettings.showPreview = !appSettings.showPreview'>
+					<a href="#" class="editor-button" v-b-tooltip.left :title="appSettings.showPreview ? 'Hide Preview' : 'Show Preview'" v-on:click='appSettings.showPreview = !appSettings.showPreview' v-if="configData.configType === 'NORMAL'">
 						<font-awesome-icon :icon="['fas', 'eye']" />
 					</a>
 					<a href="#" v-on:click='openCodeEditor' class="editor-button" v-b-tooltip.left :title="codeEditor.codeEditorActive ? 'Hide Code Editor' : 'Show Code Editor'" :disabled='configData.isConfigLoaded'>
@@ -75,7 +82,11 @@
 
 			<div class="editor-body" :class="darkMode ? 'dark' : 'light'">
 				<div class="card" style="height: 100%;" :class="darkMode ? 'dark' : 'light'">
-					<div class="card-header"><h4 class="float-left">{{appVars.activeSection.current | sectionToNormal}} Config</h4> <a href="#" class="btn btn-success btn-sm float-end" v-if="appVars.activeSection.current === 'world_images' || appVars.activeSection.current === 'dimension_overrides'" v-on:click="appVars.activeSection.current === 'dimension_overrides' ? addDimension() : addWorld()">{{appVars.activeSection.current === 'dimension_overrides' ? 'Add Dimension' : 'Add World'}}</a></div>
+					<div class="card-header">
+            <h4 class="float-left" v-if="configData.configType === 'NORMAL'">{{appVars.activeSection.current | sectionToNormal}} Config</h4>
+            <h4 class="float-left" v-if="configData.configType === 'SERVER'">Server Entries Config</h4>
+            <a href="#" class="btn btn-success btn-sm float-end" v-if="appVars.activeSection.current === 'world_images' || appVars.activeSection.current === 'dimension_overrides'" v-on:click="appVars.activeSection.current === 'dimension_overrides' ? addDimension() : addWorld()">{{appVars.activeSection.current === 'dimension_overrides' ? 'Add Dimension' : 'Add World'}}</a>
+          </div>
 
 					<div class="card-body" style="height: 100%; overflow-y: auto;">
 
@@ -108,7 +119,36 @@
 							</div>
 						</div>
 
-						<div class="card" v-if="configData.new.general != null && configData.new[appVars.activeSection.current].buttons != null" :class="darkMode ? 'dark' : 'light'" >
+            <div class="row mb-3" v-for="(value, key) in configData.new" v-if="configData.configType === 'SERVER' && key !== 'entry'">
+              <label class="col-sm-2 col-form-label">{{key | camelToNormal}}</label>
+              <div class="col-sm-10" :class="typeof value === 'boolean' ? 'pad9' : ''">
+
+                <div class="form-check form-switch" v-if="typeof value === 'boolean'">
+                  <input class="form-check-input" type="checkbox" :class="darkMode ? 'dark' : 'light'" v-model="configData.new[key]">
+                </div>
+
+                <input type="text" class="form-control" :class="darkMode ? 'dark' : 'light'" :readonly="key === 'version'" v-if="typeof value !== 'boolean' && key !== 'largeImageKey' && key !== 'smallImageKey'" v-model="configData.new[key]"/>
+
+                <v-select :options="configData.appAssets" class="image-chooser" :class="darkMode ? 'dark' : 'light'" label="name" v-if="(key === 'largeImageKey' || key === 'smallImageKey') && !appVars.manualEdit" v-model="configData.new[key]" :reduce="option => option.name" taggable>
+                  <template slot="option" slot-scope="option">
+                    <img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID + '/' + option.id" style="width: 48px;"/>
+                    {{ option.name }}
+                  </template>
+                </v-select>
+
+                <div class="input-group mb-3" v-if="(key === 'largeImageKey' || key === 'smallImageKey') && appVars.manualEdit">
+                  <input type="text" class="form-control" v-model="configData.new[key]" v-on:change="" style="border-radius: 5px 0px 0px 5px;">
+                  <div class="input-group-append">
+                    <button class="btn btn-success" type="button" v-on:click="appVars.manualEdit = !appVars.manualEdit">
+                      <font-awesome-icon :icon="['fas', 'edit']" />
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+						<div class="card" v-if="configData.configType === 'NORMAL' && configData.new.general != null && configData.new[appVars.activeSection.current].buttons != null" :class="darkMode ? 'dark' : 'light'" >
 
 							<div class="card-header">
 								Buttons <button class="btn btn-sm btn-danger float-end" v-if="configData.new[appVars.activeSection.current].buttons.length < 2" v-on:click="addButton(appVars.activeSection.current)">Add</button>
@@ -205,13 +245,38 @@
 							</div>
 						</div>
 
+            <div v-if="configData.configType === 'SERVER' && configData.isConfigLoaded && Object.hasOwnProperty.bind(configData.new)('entry')">
+              <div class="card" v-for="(dimension, key) in configData.new.entry" style="margin-bottom: 10px;" :class="darkMode ? 'dark' : 'light'">
+
+                <div class="card-header card-secondary">
+                  <div class="float-left">
+                    Server Override ({{dimension.ip}})
+                  </div>
+                  <div class="btn-group float-end" role="group" aria-label="World Actions">
+                    <button type="button" class="btn btn-success btn-sm" v-on:click="addServer()">Add Entry</button>
+                    <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteServer(key)">Delete Entry</button>
+                  </div>
+                </div>
+
+                <div style="padding: 10px;">
+                  <div class="mb-3 row" v-for="(worldData, datakey) in dimension">
+                    <label class="col-sm-2 col-form-label">{{datakey | camelToNormal}}</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" :class="darkMode ? 'dark' : 'light'" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'ip' || datakey === 'description' || datakey === 'state' || datakey === 'largeImageKey' || datakey === 'smallImageKey'" v-model="configData.new.entry[key][datakey]">
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
 					</div>
 				</div>
 			</div>
 
 			<!-- Preview -->
 			<div class="rpc-container" :class="appSettings.showPreview && !aboutInfo.showAbout && !codeEditor.codeEditorActive && !appSettings.showChangelog ? '' : 'hiderpc'">
-				<div class="rpc" style="background: #000; width: 320px; height: 250px; border-radius: 10px;" v-if="configData.isConfigLoaded && configData.new.general != null">
+				<div class="rpc" style="background: #000; width: 320px; height: 250px; border-radius: 10px;" v-if="configData.configType === 'NORMAL' && configData.isConfigLoaded && configData.new.general != null">
 
 					<div id="rpcLargeImage" style="background-size: 100% 100%; background-repeat: no-repeat; position: absolute; top: 62px; left: 20px; width: 60px; height: 60px; background: white; border-radius: 10px;" title=""></div>
 					<div id="rpcSmallImage" style="background-size: 100% 100%; background-repeat: no-repeat; position: absolute; top: 104px; left: 64px; width: 20px; height: 20px; background: red; border-radius: 50%; z-index: 500" title="test"></div>
@@ -263,7 +328,8 @@ export default {
 				lastConfigData: [],
 				configPath: "Not Loaded",
 				isConfigLoaded: false,
-				appAssets: []
+				appAssets: [],
+        configType: "NORMAL"
 			},
 			appSettings: {
 				showPreview: false,
@@ -323,7 +389,7 @@ export default {
 
 		setInterval(async function () {
 			if (appRef.configData.isConfigLoaded) {
-				if (!_.isEqual(appRef.configData.new, appRef.configData.lastConfigData) || appRef.appVars.activeSection.last !== appRef.appVars.activeSection.current) {
+				if (appRef.configData.configType === 'NORMAL' && !_.isEqual(appRef.configData.new, appRef.configData.lastConfigData) || appRef.appVars.activeSection.last !== appRef.appVars.activeSection.current) {
 					await AppFunctions.logData('INFO', 'Updating RPC');
 
 					appRef.configData.lastConfigData = _.cloneDeep(appRef.configData.new);
@@ -332,7 +398,7 @@ export default {
 					AppFunctions.updateRPC(appRef, appRef.appVars.activeSection.current);
 				}
 
-				if (appRef.configData.lastConfigData.general !== null && appRef.configData.new.general !== null && appRef.configData.lastConfigData.general.clientID !== appRef.configData.new.general.clientID) {
+				if (appRef.configData.configType === 'NORMAL' && appRef.configData.lastConfigData.general !== null && appRef.configData.new.general !== null && appRef.configData.lastConfigData.general.clientID !== appRef.configData.new.general.clientID) {
 					EditorFunctions.fetchDiscordAssets(appRef.configData.new.general.clientID, this);
 					appRef.configData.lastConfigData = _.cloneDeep(appRef.configData.new);
 				}
@@ -355,7 +421,11 @@ export default {
 			EditorFunctions.deleteButton(this, sec, index);
 		},
 		saveConfig: function() {
-			EditorFunctions.saveConfig(this, true);
+			if (this.configData.configType === 'NORMAL') {
+        EditorFunctions.saveConfig(this, true);
+      } else {
+        EditorFunctions.saveOverrideConfig(this, true);
+      }
 		},
 		openCodeEditor: function() {
 			if (this.configData.isConfigLoaded) {
@@ -383,7 +453,13 @@ export default {
 		},
 		deleteDimension: function(key) {
 			EditorFunctions.deleteDimension(this, this.appVars.activeSection.current, key);
-		}
+		},
+    addServer: function() {
+      EditorFunctions.addServer(this);
+    },
+    deleteServer: function(key) {
+      EditorFunctions.deleteServer(this, key);
+    },
 
 	},
 	filters: {

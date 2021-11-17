@@ -8,6 +8,7 @@ Version 2.0.1 Beta:
 * Added Copy to Clipboard function to code editor
 * Improved the overall GUI
 * Added support to manually enter image keys
+* Added support for Server Entries Override Config File
 
 Version 2.0.0 Beta:
 * Switched to a new Framework
