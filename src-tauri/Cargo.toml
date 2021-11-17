@@ -1,11 +1,11 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
+name = "simple-rpc-editor"
+version = "2.0.1"
+description = "Simple RPC Config Editor App"
+authors = ["HypherionSA"]
+license = "MIT"
 repository = ""
-default-run = "app"
+default-run = "simple-rpc-editor"
 edition = "2018"
 build = "src/build.rs"
 
