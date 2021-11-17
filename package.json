@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "tauri:build": "vue-cli-service tauri:build",
-    "tauri:serve": "vue-cli-service tauri:serve"
+    "tauri:serve": "vue-cli-service tauri:serve",
+    "bundle": "tauri:build"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
