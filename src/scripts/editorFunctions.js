@@ -337,7 +337,8 @@ const EditorFunctions = {
 
 	showCodeEditor: async function(appRef) {
 		appRef.codeEditor.codeEditorActive = true;
-		if (appRef.configData.configType === 'NORMAL') {
+
+		if (appRef.configType === 'NORMAL') {
 			this.saveConfig(appRef, false).then(res => {
 				appRef.codeEditor.codeEditorContent = res;
 				html_editor = ace.edit("codeditor");
@@ -365,10 +366,10 @@ const EditorFunctions = {
 
 		if (data.general != null && data.general.clientID != null) {
 			appRef.configData.new = data;
-			appRef.configData.configType = "NORMAL";
+			appRef.configType = "NORMAL";
 		} else if (data.entry != null) {
 			appRef.configData.new = data;
-			appRef.configData.configType = "SERVER";
+			appRef.configType = "SERVER";
 		}
 	}
 
