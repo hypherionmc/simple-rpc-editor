@@ -6,7 +6,7 @@ on:
 jobs:
   publish-rpc:
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       TAURI_PRIVATE_KEY: '${{ secrets.TAURI_SIGN_KEY }}'
       TAURI_KEY_PASSWORD: '${{ secrets.TAURI_SIGN_PASSWORD }}'
     strategy:
