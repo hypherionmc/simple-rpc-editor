@@ -2,6 +2,9 @@
 	<div class="code-editor" style='vertical-align: top !important; justify-items: normal !important; align-items: normal !important; display: block;' :class="darkMode ? 'dark' : 'light'">
 		<h4 id="changelog_head" class="text-center" style='width: 100%;' :class="darkMode ? 'dark' : 'light'">What's New</h4>
 		<pre id="changelog" style="width: 100%; height: 95%; background: transparent !important; border: 0px;" readonly="readonly" class="w-100 form-control" :class="darkMode ? 'dark' : 'light'">
+Version 2.0.2 Beta:
+* Fixed Code editor showing everything as [Object]
+
 Version 2.0.1 Beta:
 * Added light-theme
 * Added images to image key dropdowns
