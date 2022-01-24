@@ -5,6 +5,7 @@
 Version 2.0.2 Beta:
 * Fixed Code editor showing everything as [Object]
 * Added Drag and Drop Support for Loading Files
+* Replaced Buy Me A Coffee with Ko-fi
 
 Version 2.0.1 Beta:
 * Added light-theme

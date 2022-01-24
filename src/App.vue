@@ -35,8 +35,8 @@
           </a>
         </div>
 
-				<a href="#" class="coffee-button" id="coffee" @click="openExternal('https://buymeacoffee.com/hypherionsa')">
-					<font-awesome-icon :icon="['fas', 'coffee']" /> Buy Me A Coffee
+				<a href="#" class="coffee-button" id="coffee" @click="openExternal('https://ko-fi.com/hypherionsa')">
+					<font-awesome-icon :icon="['fas', 'coffee']" /> Support Me
 				</a>
 
 				<div class="support-box" :class="darkMode ? 'dark' : 'light'">
