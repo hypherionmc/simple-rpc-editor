@@ -3,8 +3,8 @@
 		<div class="text-center">
 			<img v-bind:src="darkMode ? require(`@/assets/img/rpc_edit_horizontal.svg`) : require(`@/assets/img/rpc_edit_horizontal_light.svg`)" style="width: 100%"  alt="" />
 			<br><br>
-			<p><b>Please choose a config file to get started</b></p>
-			<a href="#" v-on:click="configMethod" class="btn btn-outline-info btn-sm">Load Config</a>
+			<p><b>Please choose a config file, or drag and drop a file here to get started</b></p>
+			<a href="#" v-on:click="configMethod(null)" class="btn btn-outline-info btn-sm">Load Config</a>
 			<br><br>
 			<p class="text-danger">{{configError}}</p>
 		</div>
@@ -12,13 +12,21 @@
 </template>
 
 <script>
+import { listen } from '@tauri-apps/api/event';
+
 export default {
 	name: 'NoConfigSplash',
 	data() {
 		return {
-			configError: ''
+			configError: '',
 		}
 	},
+  created() {
+    var appRef = this;
+    listen("tauri://file-drop", event => {
+      appRef.configMethod(event.payload[0])
+    });
+  },
 	props: {
 		darkMode: false,
 		configMethod: null

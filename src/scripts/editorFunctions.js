@@ -8,7 +8,6 @@ let html_editor;
 const EditorFunctions = {
 
 	// Config
-
 	loadConfigFile: function (outRef) {
 		dialog.open({
 			defaultPath: null,
@@ -19,38 +18,54 @@ const EditorFunctions = {
 			multiple: false,
 			directory: false
 		}).then(file => {
-
-			if (file !== "") {
-				if (file.endsWith(".toml")) {
-
-					fs.readTextFile(file, {}).then(tomlFile => {
-						const data = FAST_TOML.parse(tomlFile);
-
-						if (data.general != null && data.general.clientID != null) {
-							outRef.configData.old = tomlFile;
-							outRef.configData.new = data;
-							outRef.configData.configPath = file;
-							outRef.configData.isConfigLoaded = true;
-							outRef.configData.configType = "NORMAL";
-							this.fetchDiscordAssets(data.general.clientID, outRef);
-						} else if (data.entry != null) {
-							outRef.configData.old = tomlFile;
-							outRef.configData.new = data;
-							outRef.configData.configPath = file;
-							outRef.configData.isConfigLoaded = true;
-							outRef.configData.configType = "SERVER";
-						}
-					}).catch(err => {
-						console.error(err);
-					});
-
-				}
-			}
-			return file;
-
+			this.readConfig(outRef, file);
 		}).catch(err => {
 			console.error(err);
 		})
+	},
+	readConfig: function (outRef, file) {
+		if (file !== "") {
+			if (file.endsWith(".toml")) {
+				fs.readTextFile(file, {}).then(tomlFile => {
+					const data = FAST_TOML.parse(tomlFile);
+
+					if (data.general != null && data.general.clientID != null) {
+						outRef.configData.old = tomlFile;
+						outRef.configData.new = data;
+						outRef.configData.configPath = file;
+						outRef.configData.isConfigLoaded = true;
+						outRef.configData.configType = "NORMAL";
+						this.fetchDiscordAssets(data.general.clientID, outRef);
+					} else if (data.entry != null) {
+						outRef.configData.old = tomlFile;
+						outRef.configData.new = data;
+						outRef.configData.configPath = file;
+						outRef.configData.isConfigLoaded = true;
+						outRef.configData.configType = "SERVER";
+					} else {
+						outRef.$swal.fire({
+							title: "Error",
+							icon: "error",
+							text: "Selected file does not appear to be a valid Simple RPC config file"
+						});
+					}
+				}).catch(err => {
+					outRef.$swal.fire({
+						title: "Error",
+						icon: "error",
+						text: err
+					});
+					console.error(err);
+				});
+			} else {
+				outRef.$swal.fire({
+					title: "Error",
+					icon: "error",
+					text: file + " is not a valid TOML file!"
+				});
+			}
+		}
+		return file;
 	},
 
 	saveConfig: async function(appRef, save) {
@@ -203,7 +218,6 @@ const EditorFunctions = {
 			assetsRef.configData.appAssets = data;
 			AppFunctions.logData('INFO', "Successfully fetched discord assets for app with id: " + appID).then(r => {});
 			AppFunctions.updateRPC(assetsRef, assetsRef.appVars.activeSection.current);
-			//app.logdata('INFO', "Successfully fetched discord assets for app with id: " + appID)
 		});
 	},
 
@@ -239,7 +253,6 @@ const EditorFunctions = {
 	},
 
 	// Worlds / Dimensions
-
 	addWorld(appRef, sec) {
 		var worldData = {
 			worldname: "",

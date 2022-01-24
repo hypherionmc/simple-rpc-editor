@@ -65,6 +65,9 @@
 					<b>{{configData.configPath}}</b>
 				</div>
 				<div class="app-buttons">
+          <a href="#" class="editor-button" v-b-tooltip.left :title="'Close Config'" onclick='window.location.reload()'>
+            <font-awesome-icon :icon="['fas', 'times']" />
+          </a>
 					<a href="#" class="editor-button" v-b-tooltip.left :title="appSettings.showPreview ? 'Hide Preview' : 'Show Preview'" v-on:click='appSettings.showPreview = !appSettings.showPreview' v-if="configData.configType === 'NORMAL'">
 						<font-awesome-icon :icon="['fas', 'eye']" />
 					</a>
@@ -334,8 +337,8 @@ export default {
 			appSettings: {
 				showPreview: false,
 				showChangelog: false,
-				internalVer: 5,
-				lastInternalVer: 4
+				internalVer: 6,
+				lastInternalVer: 5
 			},
 			codeEditor: {
 				editorRef: Object,
@@ -408,8 +411,12 @@ export default {
 	},
 	methods: {
 
-		loadConfigFile: function() {
-			EditorFunctions.loadConfigFile(this);
+		loadConfigFile: function(file) {
+			if (file !== null) {
+        EditorFunctions.readConfig(this, file);
+      } else {
+        EditorFunctions.loadConfigFile(this);
+      }
 		},
 		getSectionIcon: function(sec) {
 			return EditorUtils.getSectionIcon(sec);

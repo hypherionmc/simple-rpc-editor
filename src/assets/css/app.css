@@ -412,3 +412,7 @@ div.code {
 .hiderpc {
     display: none;
 }
+
+.swal2-container {
+    z-index: 1000000 !important;
+}
