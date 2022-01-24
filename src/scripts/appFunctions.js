@@ -58,13 +58,10 @@ const AppFunctions = {
 			$(".rpcState").text(this.dummyVars(dat.state)).attr("title", this.dummyVars(dat.state));
 
 			if (dat.buttons[0] != null) {
-
 				var buttonHTML = `<a id="rpcButton1" class="disabled btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 140px; left: 20px; width: 280px;" href="${dat.buttons[0].url}">${dat.buttons[0].label}</a>`;
-
 				if (dat.buttons[1] != null) {
 					buttonHTML += `<a id="rpcButton2" class="disabled btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 190px; left: 20px; width: 280px;" href="${dat.buttons[1].url}">${dat.buttons[1].label}</a>`;
 				}
-
 				$(".rpcButtonContainer").html(buttonHTML);
 			} else {
 				$(".rpcButtonContainer").html("");
@@ -76,12 +73,22 @@ const AppFunctions = {
 					.css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.new.general.clientID + "/" + assetID[0].id + ".png)")
 					.css("background-size", "100% 100%")
 					.attr("title", this.dummyVars(dat.largeImageText));
+			} else if (appRef.configData.new[sec].largeImageKey.startsWith("http")) {
+				$("#rpcLargeImage")
+					.css("background", "url(" + appRef.configData.new[sec].largeImageKey + ")")
+					.css("background-size", "100% 100%")
+					.attr("title", this.dummyVars(dat.largeImageText));
 			}
 
 			var assetIDSmall = appRef.configData.appAssets.filter(c => c.name === appRef.configData.new[sec].smallImageKey);
 			if (assetIDSmall[0] !== undefined && assetIDSmall[0].hasOwnProperty("id")) {
 				$("#rpcSmallImage")
 					.css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.new.general.clientID + "/" + assetIDSmall[0].id + ".png)")
+					.css("background-size", "100% 100%")
+					.attr("title", this.dummyVars(dat.smallImageText));
+			} else if (appRef.configData.new[sec].smallImageKey.startsWith("http")) {
+				$("#rpcSmallImage")
+					.css("background", "url(" + appRef.configData.new[sec].smallImageKey + ")")
 					.css("background-size", "100% 100%")
 					.attr("title", this.dummyVars(dat.smallImageText));
 			}
