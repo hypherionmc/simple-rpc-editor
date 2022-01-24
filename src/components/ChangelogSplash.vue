@@ -7,6 +7,7 @@ Version 2.0.2 Beta:
 * Added Drag and Drop Support for Loading Files
 * Replaced Buy Me A Coffee with Ko-fi
 * Added support for URL based Image Keys
+* Preview now shows the real app name instead of Minecraft
 
 Version 2.0.1 Beta:
 * Added light-theme

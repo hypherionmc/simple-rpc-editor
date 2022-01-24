@@ -209,6 +209,9 @@ const EditorFunctions = {
 	},
 
 	fetchDiscordAssets(appID, assetsRef) {
+		// Check if the appID is valid
+		EditorUtils.isValidRPC(assetsRef, appID);
+
 		// This API call runs through a proxy server, because JQUERY blocks calls to the discord API due to missing headers
 		// The proxy server is powered by this code: https://github.com/jesperorb/node-api-proxy
 		$.ajax({

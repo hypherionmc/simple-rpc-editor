@@ -77,7 +77,7 @@
 					<a href="#" class="editor-button" @click="saveConfig" v-b-tooltip.left title="Save Config">
 						<font-awesome-icon :icon="['fas', 'save']" />
 					</a>
-					<a href="#" class="editor-button" @click="loadConfigFile" v-b-tooltip.left title="Load Config">
+					<a href="#" class="editor-button" @click="loadConfigFile(null)" v-b-tooltip.left title="Load Config">
 						<font-awesome-icon :icon="['fas', 'file-alt']" />
 					</a>
 				</div>
@@ -108,6 +108,10 @@
 										<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID + '/' + option.id" style="width: 48px;"/>
 										{{ option.name }}
 									</template>
+                  <!--template slot="option" slot-scope="option" v-if="appVars.activeSection.current === 'multi_player'">
+                    <img src="https://raw.githubusercontent.com/Exploding-Creeper/botassets/main/Untitled-1a%20(2).png" style="width: 48px;"/>
+                    %servericon%
+                  </template-->
 								</v-select>
 
 								<div class="input-group mb-3" v-if="(key === 'largeImageKey' || key === 'smallImageKey') && appVars.manualEdit">
@@ -223,16 +227,10 @@
 
 											<input type="text" class="form-control" :class="darkMode ? 'dark' : 'light'" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'name' || datakey === 'description' || datakey === 'state'" v-model="configData.new.dimension_overrides.dimensions[key][datakey]">
 
-											<v-select
-												:options="configData.appAssets"
-												class="image-chooser"
-												:class="darkMode ? 'dark' : 'light'"
-												label="name"
-												v-if="(datakey === 'largeImageKey' || datakey === 'smallImageKey')"
-												v-model="configData.new.dimension_overrides.dimensions[key][datakey]"
-												:reduce="option => option.name"
-												taggable
-											>
+											<v-select :options="configData.appAssets" class="image-chooser" :class="darkMode ? 'dark' : 'light'"
+												label="name" v-if="(datakey === 'largeImageKey' || datakey === 'smallImageKey')"
+                        v-model="configData.new.dimension_overrides.dimensions[key][datakey]"
+												:reduce="option => option.name" taggable>
 
 												<template slot="option" slot-scope="option">
 													<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID + '/' + option.id" style="width: 48px;"/>
@@ -280,12 +278,12 @@
 			<!-- Preview -->
 			<div class="rpc-container" :class="appSettings.showPreview && !aboutInfo.showAbout && !codeEditor.codeEditorActive && !appSettings.showChangelog ? '' : 'hiderpc'">
 				<div class="rpc" style="background: #000; width: 320px; height: 250px; border-radius: 10px;" v-if="configData.configType === 'NORMAL' && configData.isConfigLoaded && configData.new.general != null">
-
+          <a href="#" v-on:click="appSettings.showPreview = !appSettings.showPreview" style="position: absolute; top: 10px; right: 10px; color: white;"><font-awesome-icon :icon="['fas', 'times']" /></a>
 					<div id="rpcLargeImage" style="background-size: 100% 100%; background-repeat: no-repeat; position: absolute; top: 62px; left: 20px; width: 60px; height: 60px; background: white; border-radius: 10px;" title=""></div>
 					<div id="rpcSmallImage" style="background-size: 100% 100%; background-repeat: no-repeat; position: absolute; top: 104px; left: 64px; width: 20px; height: 20px; background: red; border-radius: 50%; z-index: 500" title="test"></div>
 
 					<span class="rpcTitle text-white" style="position: absolute; top: 20px; left: 20px; font-size: 12px;"><b>PLAYING A GAME</b></span>
-					<span class="rpcAppName text-white" style="position: absolute; top: 58px; left: 90px; font-size: 14px;"><b>Minecraft</b></span>
+					<span class="rpcAppName text-white" style="position: absolute; top: 58px; left: 90px; font-size: 14px;"><b>{{ configData.appName }}</b></span>
 					<span class="rpcDescription text-white" style="position: absolute; top: 74px; left: 90px; white-space: nowrap; overflow: hidden; font-size: 12px; text-wrap: none; text-overflow: ellipsis; width: 200px;" title="">Config Not Loaded</span>
 					<span class="rpcState text-white" style="position: absolute; top: 89px; left: 90px; white-space: nowrap; overflow: hidden; font-size: 12px; text-wrap: none; text-overflow: ellipsis; width: 200px;" title="">Config Not Loaded</span>
 					<span class="rpcTimer text-white" style="position: absolute; top: 104px; left: 90px; font-size: 12px;">{{preview.totalTime|msToTime}} elapsed</span>
@@ -302,7 +300,7 @@
 
 <script>
 import './assets/css/app.css';
-import { os, app, clipboard } from '@tauri-apps/api';
+import { os, app, clipboard, invoke } from '@tauri-apps/api';
 import EditorFunctions from '@/scripts/editorFunctions';
 import EditorUtils from '@/scripts/editorUtils';
 import AppFunctions from '@/scripts/appFunctions';
@@ -323,6 +321,7 @@ export default {
 					current: 'general',
 					last: 'general'
 				},
+        startTime: new Date(),
 				manualEdit: false
 			},
 			configData: {
@@ -332,7 +331,8 @@ export default {
 				configPath: "Not Loaded",
 				isConfigLoaded: false,
 				appAssets: [],
-        configType: "NORMAL"
+        configType: "NORMAL",
+        appName: "Minecraft"
 			},
 			appSettings: {
 				showPreview: false,
@@ -385,10 +385,19 @@ export default {
 
 		setInterval(async function () {
 			appRef.preview.totalTime += 1000;
-
 			AppFunctions.saveSettings(appRef);
-
 		}, 1000);
+
+    /*await invoke("discord_rpc", {
+      clientId: "885690338025545809",
+      state: "Idling",
+      details: "",
+      largeImageKey: "logo",
+      largeImageText: "Simple RPC Editor" + appRef.aboutInfo.appver,
+      smallImageKey: "",
+      smallImageText: "",
+      startTime: Math.round(Date.now() / 1000)
+    });*/
 
 		setInterval(async function () {
 			if (appRef.configData.isConfigLoaded) {
@@ -397,13 +406,8 @@ export default {
 
 					appRef.configData.lastConfigData = _.cloneDeep(appRef.configData.new);
 					appRef.appVars.activeSection.last = appRef.appVars.activeSection.current;
-
+          EditorFunctions.fetchDiscordAssets(appRef.configData.new.general.clientID, appRef);
 					AppFunctions.updateRPC(appRef, appRef.appVars.activeSection.current);
-				}
-
-				if (appRef.configData.configType === 'NORMAL' && appRef.configData.lastConfigData.general !== null && appRef.configData.new.general !== null && appRef.configData.lastConfigData.general.clientID !== appRef.configData.new.general.clientID) {
-					EditorFunctions.fetchDiscordAssets(appRef.configData.new.general.clientID, this);
-					appRef.configData.lastConfigData = _.cloneDeep(appRef.configData.new);
 				}
 			}
 		}, 10);

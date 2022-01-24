@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import $ from 'jquery';
 
 const EditorUtils = {
 
@@ -90,7 +91,21 @@ const EditorUtils = {
 	isNumeric: function (input) {
 		const reg = new RegExp('^[0-9]+$');
 		return reg.test(input);
-	}
+	},
+	isValidRPC: function (appRef, appID) {
+		let retVal = false;
+		$.get("https://discord.com/api/v9/oauth2/applications/" + appID + "/rpc").then(res => {
+			appRef.configData.appName = res.name;
+			retVal = true;
+			console.log(res);
+		}).catch(err => {
+			appRef.configData.appName = "Minecraft";
+			retVal = false;
+			console.error(err.response);
+		});
+		console.log(retVal);
+		return retVal;
+	},
 
 };
 
