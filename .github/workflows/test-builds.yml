@@ -35,7 +35,7 @@ jobs:
       - name: bundle app
         run:
           yarn bundle
-      - uses: tauri-apps/tauri-action@v0
+      - uses: jdukewich/tauri-action@fix-windows-bundling
         with:
           tagName: __VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: "Simple RPC Editor v__VERSION__ (Dev)"
