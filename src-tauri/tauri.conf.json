@@ -1,7 +1,7 @@
 {
   "package": {
     "productName": "simple-rpc-editor",
-    "version": "2.0.2a"
+    "version": "2.0.3"
   },
   "build": {
     "distDir": "Set automatically by Vue CLI plugin",
@@ -43,7 +43,10 @@
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
-        "timestampUrl": ""
+        "timestampUrl": "",
+        "wix": {
+          "license": "../license.md"
+        }
       }
     },
     "updater": {

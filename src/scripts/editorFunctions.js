@@ -3,6 +3,7 @@ import FAST_TOML from '@/scripts/fast-toml';
 import $ from 'jquery';
 import EditorUtils from '@/scripts/editorUtils';
 import AppFunctions from '@/scripts/appFunctions';
+import {help_keys} from "@/scripts/help";
 let html_editor;
 
 const EditorFunctions = {
@@ -76,6 +77,10 @@ const EditorFunctions = {
 			outFile += "[" + key + "]\n";
 
 			$.each(value, function (subkey, subvalue) {
+
+				if (help_keys[key] !== undefined && help_keys[key][subkey] !== undefined) {
+					outFile += "\t#" + help_keys[key][subkey] + "\n";
+				}
 
 				if (subkey !== "buttons" && subkey !== "worlds" && subkey !== "dimensions") {
 

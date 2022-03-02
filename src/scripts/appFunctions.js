@@ -18,12 +18,16 @@ const AppFunctions = {
 		if (localStorage.getItem("darkmode") !== null) {
 			appRef.darkMode = localStorage.getItem("darkmode") === 'true';
 		}
+		if (localStorage.getItem("showhelp") !== null) {
+			appRef.showHelp = localStorage.getItem("showhelp") === 'true';
+		}
 	},
 	saveSettings: function(appRef) {
 		localStorage.setItem("showpreview", appRef.appSettings.showPreview.toString());
 		localStorage.setItem("showcl", appRef.appSettings.showChangelog.toString());
 		localStorage.setItem("internalver", appRef.appSettings.internalVer.toString());
 		localStorage.setItem("darkmode", appRef.darkMode.toString());
+		localStorage.setItem("showhelp", appRef.showHelp.toString());
 	},
 
 	initLogger: function() {
@@ -110,9 +114,13 @@ const AppFunctions = {
 		inputText = inputText.replace("%serverip%", "127.0.0.1");
 		inputText = inputText.replace("%servername%", "BisectHosting Rocks");
 		inputText = inputText.replace("%players%", Math.floor(Math.random() * 20) + 1);
+		inputText = inputText.replace("%maxplayers%", 50);
 		inputText = inputText.replace("%motd%", "Check out Simple RPC");
 		inputText = inputText.replace("%launcher%", "MultiMC");
 		inputText = inputText.replace("%pack%", "Dummy Pack");
+		inputText = inputText.replace("%savename%", "My Awesome World");
+		inputText = inputText.replace("%server%", "127_0_0_1");
+		inputText = inputText.replace("%launchername%", "GDLauncher");
 
 		return inputText;
 

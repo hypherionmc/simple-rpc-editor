@@ -8,6 +8,9 @@ Version 2.0.2 Beta:
 * Replaced Buy Me A Coffee with Ko-fi
 * Added support for URL based Image Keys
 * Preview now shows the real app name instead of Minecraft
+* You can now close and load different configs without closing the app
+* Added built-in help text. Can be toggled
+* Important comments are now preserved when saving the config file
 
 Version 2.0.1 Beta:
 * Added light-theme

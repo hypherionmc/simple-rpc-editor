@@ -26,6 +26,10 @@
 						<font-awesome-icon :icon="['fas', getSectionIcon(key)]" />
 						<span class="nav-link-text">{{key | sectionToNormal}}</span>
 					</a>
+          <a href="#" :class="[darkMode ? 'dark' : 'light']" @click="openExternal('https://readme.firstdarkdev.xyz/simple-rpc/introduction/')">
+            <font-awesome-icon :icon="['fas', 'question']" />
+            <span class="nav-link-text">Documentation</span>
+          </a>
 				</div>
 
         <div class="linkbox" v-if="configData.configType === 'SERVER'">
@@ -68,6 +72,9 @@
           <a href="#" class="editor-button" v-b-tooltip.left :title="'Close Config'" onclick='window.location.reload()'>
             <font-awesome-icon :icon="['fas', 'times']" />
           </a>
+          <a href="#" class="editor-button" v-b-tooltip.left :title="showHelp ? 'Hide Help Text' : 'Show Help Text'" v-on:click='showHelp = !showHelp'>
+            <font-awesome-icon :icon="['fas', 'question']" />
+          </a>
 					<a href="#" class="editor-button" v-b-tooltip.left :title="appSettings.showPreview ? 'Hide Preview' : 'Show Preview'" v-on:click='appSettings.showPreview = !appSettings.showPreview' v-if="configData.configType === 'NORMAL'">
 						<font-awesome-icon :icon="['fas', 'eye']" />
 					</a>
@@ -94,8 +101,9 @@
 					<div class="card-body" style="height: 100%; overflow-y: auto;">
 
 						<div class="row mb-3" v-for="(value, key) in configData.new[appVars.activeSection.current]" v-if="key !== 'buttons' && key !== 'worlds' && key !== 'dimensions'">
-							<label class="col-sm-2 col-form-label">{{key | camelToNormal}}</label>
-							<div class="col-sm-10" :class="typeof value === 'boolean' ? 'pad9' : ''">
+							<label class="col-sm-2 col-form-label" style="margin-bottom: 0px; padding-bottom: 0px;">{{key | camelToNormal}}</label>
+              <label class="text-info text-sm-left" style="margin-bottom: 2px;" v-if="appVars.activeSection.current !== 'dimension_overrides' && showHelp && configData.configType !== 'SERVER'">{{ helpKeys[appVars.activeSection.current][key] }} </label>
+							<div class="col-sm-12" :class="typeof value === 'boolean' ? 'pad9' : ''">
 
 								<div class="form-check form-switch" v-if="typeof value === 'boolean'">
 									<input class="form-check-input" type="checkbox" :class="darkMode ? 'dark' : 'light'" v-model="configData.new[appVars.activeSection.current][key]">
@@ -108,10 +116,6 @@
 										<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID + '/' + option.id" style="width: 48px;"/>
 										{{ option.name }}
 									</template>
-                  <!--template slot="option" slot-scope="option" v-if="appVars.activeSection.current === 'multi_player'">
-                    <img src="https://raw.githubusercontent.com/Exploding-Creeper/botassets/main/Untitled-1a%20(2).png" style="width: 48px;"/>
-                    %servericon%
-                  </template-->
 								</v-select>
 
 								<div class="input-group mb-3" v-if="(key === 'largeImageKey' || key === 'smallImageKey') && appVars.manualEdit">
@@ -309,12 +313,15 @@ import NoConfigSplash from '@/components/NoConfigSplash';
 import AboutSplash from '@/components/AboutSplash';
 import ChangelogSplash from '@/components/ChangelogSplash';
 import _ from "lodash";
+import { help_keys} from "@/scripts/help";
 
 export default {
 	name: 'App',
 	components: { AboutSplash, NoConfigSplash, SplashScreen, ChangelogSplash },
 	data: function () {
 		return {
+      helpKeys: help_keys,
+      showHelp: true,
 			darkMode: false,
 			appVars: {
 				activeSection: {
@@ -337,8 +344,8 @@ export default {
 			appSettings: {
 				showPreview: false,
 				showChangelog: false,
-				internalVer: 6,
-				lastInternalVer: 5
+				internalVer: 7,
+				lastInternalVer: 6
 			},
 			codeEditor: {
 				editorRef: Object,
