@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
+        platform: [macos-latest, ubuntu-latest, windows-2019]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -38,7 +38,7 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         with:
           tagName: __VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-          releaseName: "Simple RPC Editor Beta v__VERSION__ (Dev)"
+          releaseName: "Simple RPC Editor v__VERSION__ (Dev)"
           releaseBody: "Coming soon"
           releaseDraft: true
           prerelease: true
