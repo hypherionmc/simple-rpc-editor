@@ -1,6 +1,6 @@
 [package]
 name = "simple-rpc-editor"
-version = "2.0.2"
+version = "2.0.4"
 description = "Simple RPC Config Editor App"
 authors = ["HypherionSA"]
 license = "MIT"

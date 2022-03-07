@@ -344,8 +344,8 @@ export default {
 			appSettings: {
 				showPreview: false,
 				showChangelog: false,
-				internalVer: 7,
-				lastInternalVer: 6
+				internalVer: 8,
+				lastInternalVer: 7
 			},
 			codeEditor: {
 				editorRef: Object,
