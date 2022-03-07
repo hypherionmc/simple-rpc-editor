@@ -44,6 +44,6 @@ body:
     id: additional
     attributes:
       label: Any additional info
-      description: "If you'd like to include any additional information, please supply it here
+      description: "If you'd like to include any additional information, please supply it here"
     validations:
       required: false
