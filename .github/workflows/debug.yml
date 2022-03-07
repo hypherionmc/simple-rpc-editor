@@ -1,0 +1,37 @@
+name: "debug"
+on:
+  push:
+    branches:
+      - master
+jobs:
+  publish-rpc:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      TAURI_PRIVATE_KEY: '${{ secrets.TAURI_SIGN_KEY }}'
+      TAURI_KEY_PASSWORD: '${{ secrets.TAURI_SIGN_PASSWORD }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-2019]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: install Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: install webkit2gtk (ubuntu only)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y webkit2gtk-4.0
+      - name: install app dependencies
+        run: yarn
+      - name: print debug info
+        run:
+          yarn tauri info
