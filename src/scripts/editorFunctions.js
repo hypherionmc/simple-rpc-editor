@@ -4,6 +4,7 @@ import $ from 'jquery';
 import EditorUtils from '@/scripts/editorUtils';
 import AppFunctions from '@/scripts/appFunctions';
 import {help_keys} from "@/scripts/help";
+import {BaseDirectory} from "@tauri-apps/api/fs";
 let html_editor;
 
 const EditorFunctions = {
@@ -27,7 +28,7 @@ const EditorFunctions = {
 	readConfig: function (outRef, file) {
 		if (file !== "") {
 			if (file.endsWith(".toml")) {
-				fs.readTextFile(file, {}).then(tomlFile => {
+				fs.readTextFile(file, { dir: BaseDirectory.Home }).then(tomlFile => {
 					const data = FAST_TOML.parse(tomlFile);
 
 					if (data.general != null && data.general.clientID != null) {
@@ -56,7 +57,7 @@ const EditorFunctions = {
 						icon: "error",
 						text: err
 					});
-					console.error(err);
+					AppFunctions.logData('ERROR', err).then(r => {});
 				});
 			} else {
 				outRef.$swal.fire({
