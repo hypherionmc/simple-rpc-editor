@@ -15,14 +15,7 @@ The aim of this software is to allow you to edit config files without having to 
 
 **Please note that this editor only supports the new TOML based config files, and not the old JSON Format files**
 
-### Known Issues
-
-* The RPC Preview always shows MINECRAFT as the running game. The discord API does not provide a way to get the real name of the app, so I cannot do much about this!
-* Comments are removed from saved Config files -> This is a FAST-TOML limitation, and will be fixed in the future, but it's not a priority at this time
-
 ## Installation
-
-~~This app is designed to be portable, so no installation is required. Simply grab the latest version from the RELEASES section, unzip the file and run the app.~~
 
 Since the update to the new framework, only installers are available. I may add a workaround in the future, but for now, you need to use the installer. The app should auto-update as new versions release.
 
@@ -52,7 +45,10 @@ This app works on Windows, Linux and MacOS
 
 ## Building from source
 
-### Coming soon
+* First, follow the Platform specific setup, listed here: [Tauri Setup](https://tauri.studio/docs/getting-started/prerequisites)
+* Next, run `yarn tauri init` or `npm run tauri init` to download all the needed javascript packages
+* To test the app, run `yarn tauri:serve` or `npm run tauri:serve`
+* To build a "release", you can run `yarn tauri:build` or `npm run tauri:build`
 
 ## Contributing
 
