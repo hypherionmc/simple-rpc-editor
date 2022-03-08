@@ -4,6 +4,7 @@
 		<pre id="changelog" style="width: 100%; height: 95%; background: transparent !important; border: 0px;" readonly="readonly" class="w-100 form-control" :class="darkMode ? 'dark' : 'light'">
 Version 2.0.4:
 * Fix "cannot recurse directory issue"
+* Upgrade Tauri to 1.0-rc
 
 Version 2.0.3:
 * Added Drag and Drop Support for Loading Files

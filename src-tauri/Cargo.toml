@@ -2,28 +2,25 @@
 name = "simple-rpc-editor"
 version = "2.0.4"
 description = "Simple RPC Config Editor App"
-authors = ["HypherionSA"]
+authors = [ "HypherionSA" ]
 license = "MIT"
 repository = "https://github.com/hypherionmc/simple-rpc-editor/"
 default-run = "simple-rpc-editor"
 edition = "2018"
 build = "src/build.rs"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [build-dependencies]
-tauri-build = { version = "1.0.0-beta.3" }
+tauri-build = { version = "1.0.0-beta.3", features = [] }
 
 [dependencies]
 serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.0.0-beta.5", features = ["api-all", "updater"] }
+serde = { version = "1.0", features = [ "derive" ] }
 discord-rpc-client = { git = "https://github.com/lennartkloock/discord-rpc-client.rs.git", branch = "master" }
+
+  [dependencies.tauri]
+  version = "1.0.0-rc"
+features = ["api-all", "updater"]
 
 [features]
 default = [ "custom-protocol" ]
 custom-protocol = [ "tauri/custom-protocol" ]
-
-[profile.release.package.wry]
-debug = true
-debug-assertions = true
