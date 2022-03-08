@@ -28,7 +28,7 @@ const EditorFunctions = {
 	readConfig: function (outRef, file) {
 		if (file !== "") {
 			if (file.endsWith(".toml")) {
-				fs.readTextFile(file, { dir: BaseDirectory.Home }).then(tomlFile => {
+				fs.readTextFile(file, {}).then(tomlFile => {
 					const data = FAST_TOML.parse(tomlFile);
 
 					if (data.general != null && data.general.clientID != null) {
