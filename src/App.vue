@@ -148,7 +148,7 @@
                 </v-select>
 
                 <div class="input-group mb-3" v-if="(key === 'largeImageKey' || key === 'smallImageKey') && appVars.manualEdit">
-                  <input type="text" class="form-control" v-model="configData.new[key]" v-on:change="" style="border-radius: 5px 0px 0px 5px;">
+                  <input type="text" class="form-control" v-model="configData.new[key]" v-on:change="" style="border-radius: 5px 0px 0px 5px;" maxlength="128">
                   <div class="input-group-append">
                     <button class="btn btn-success" type="button" v-on:click="appVars.manualEdit = !appVars.manualEdit">
                       <font-awesome-icon :icon="['fas', 'edit']" />
@@ -229,7 +229,7 @@
 										<label class="col-sm-2 col-form-label">{{datakey | camelToNormal}}</label>
 										<div class="col-sm-10">
 
-											<input type="text" class="form-control" :class="darkMode ? 'dark' : 'light'" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'name' || datakey === 'description' || datakey === 'state'" v-model="configData.new.dimension_overrides.dimensions[key][datakey]">
+											<input type="text" class="form-control" :class="darkMode ? 'dark' : 'light'" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'name' || datakey === 'description' || datakey === 'state'" v-model="configData.new.dimension_overrides.dimensions[key][datakey]" maxlength="128">
 
 											<v-select :options="configData.appAssets" class="image-chooser" :class="darkMode ? 'dark' : 'light'"
 												label="name" v-if="(datakey === 'largeImageKey' || datakey === 'smallImageKey')"
@@ -267,7 +267,7 @@
                   <div class="mb-3 row" v-for="(worldData, datakey) in dimension">
                     <label class="col-sm-2 col-form-label">{{datakey | camelToNormal}}</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" :class="darkMode ? 'dark' : 'light'" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'ip' || datakey === 'description' || datakey === 'state' || datakey === 'largeImageKey' || datakey === 'smallImageKey'" v-model="configData.new.entry[key][datakey]">
+                      <input type="text" class="form-control" :class="darkMode ? 'dark' : 'light'" v-if="datakey === 'largeImageText' || datakey === 'smallImageText' || datakey === 'ip' || datakey === 'description' || datakey === 'state' || datakey === 'largeImageKey' || datakey === 'smallImageKey'" v-model="configData.new.entry[key][datakey]" maxlength="128">
                     </div>
                   </div>
                 </div>
@@ -344,8 +344,8 @@ export default {
 			appSettings: {
 				showPreview: false,
 				showChangelog: false,
-				internalVer: 8,
-				lastInternalVer: 7
+				internalVer: 9,
+				lastInternalVer: 8
 			},
 			codeEditor: {
 				editorRef: Object,
@@ -394,17 +394,6 @@ export default {
 			appRef.preview.totalTime += 1000;
 			AppFunctions.saveSettings(appRef);
 		}, 1000);
-
-    /*await invoke("discord_rpc", {
-      clientId: "885690338025545809",
-      state: "Idling",
-      details: "",
-      largeImageKey: "logo",
-      largeImageText: "Simple RPC Editor" + appRef.aboutInfo.appver,
-      smallImageKey: "",
-      smallImageText: "",
-      startTime: Math.round(Date.now() / 1000)
-    });*/
 
 		setInterval(async function () {
 			if (appRef.configData.isConfigLoaded) {
