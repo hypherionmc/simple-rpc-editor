@@ -13,7 +13,7 @@ module.exports = {
 				{
 					"provider": "github",
 					"owner": "hypherionmc",
-				    "repo": "simple-rpc-editor2",
+				    "repo": "simple-rpc-editor",
 					"private": true,
 					"releaseType": "draft"
 				}
