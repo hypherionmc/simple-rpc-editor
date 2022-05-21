@@ -1,5 +1,5 @@
 <template>
-	<div class="noconfigsplash" :class="darkMode ? 'dark' : 'light'">
+	<div class="noconfigsplash" :class="darkMode ? 'dark' : 'light'" id="dragdrop">
 		<div class="text-center">
 			<img v-bind:src="darkMode ? require(`@/assets/img/rpc_edit_horizontal.svg`) : require(`@/assets/img/rpc_edit_horizontal_light.svg`)" style="width: 100%"  alt="" />
 			<br><br>
@@ -12,7 +12,8 @@
 </template>
 
 <script>
-import { listen } from '@tauri-apps/api/event';
+//import { listen } from '@tauri-apps/api/event';
+import $ from 'jquery';
 
 export default {
 	name: 'NoConfigSplash',
@@ -23,11 +24,21 @@ export default {
 	},
   created() {
     var appRef = this;
-    listen("tauri://file-drop", event => {
+    /*listen("tauri://file-drop", event => {
       appRef.configMethod(event.payload[0])
-    });
+    });*/
+    document.body.addEventListener('dragover', evt => {
+      evt.preventDefault();
+    })
+    document.body.addEventListener('drop', evt => {
+      evt.preventDefault();
+      appRef.configMethod(evt.dataTransfer.files[0].path);
+    })
   },
-	props: {
+  mounted() {
+
+  },
+  props: {
 		darkMode: false,
 		configMethod: null
 	}

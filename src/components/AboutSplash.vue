@@ -3,9 +3,9 @@
 		<div class="text-center">
 			<img v-bind:src="darkMode ? require(`@/assets/img/rpc_edit_horizontal.svg`) : require(`@/assets/img/rpc_edit_horizontal_light.svg`)" style="width: 100%"  alt="" />
 			<br><br>
-			<p><b>Version: <a href='#' v-on:click='showChangelog' style='text-decoration: underline !important; font-weight: bold; color: inherit;'>{{aboutInfo.appver}}</a> | Tauri Version: {{aboutInfo.nlversion}} | OS: {{aboutInfo.os}}</b></p><br>
+			<p><b>Version: <a href='#' v-on:click='showChangelog' style='text-decoration: underline !important; font-weight: bold; color: inherit;'>{{aboutInfo.appver}}</a> | Node Version: {{aboutInfo.nlversion}} | Chrome Version: {{aboutInfo.chrome}} | OS: {{aboutInfo.os}}</b></p><br>
 			<p><b>Technologies:</b></p>
-			<p><a href="#" v-on:click="externalMethod('https://getbootstrap.com/')">Bootstrap 4</a>, <a href="#" v-on:click="externalMethod('https://vuejs.org/')">VUE.js</a>, <a href="#" v-on:click="externalMethod('https://fontawesome.com/')">Font Awesome</a>, <a href="#" v-on:click="externalMethod('https://tauri.studio/')">Tauri</a>, <a href="#" v-on:click="externalMethod('https://github.com/hypherionmc/fast-toml/')">Fast-Toml</a></p><br>
+			<p><a href="#" v-on:click="externalMethod('https://getbootstrap.com/')">Bootstrap 4</a>, <a href="#" v-on:click="externalMethod('https://vuejs.org/')">VUE.js</a>, <a href="#" v-on:click="externalMethod('https://fontawesome.com/')">Font Awesome</a>, <a href="#" v-on:click="externalMethod('https://www.electronjs.org')">Electron</a>, <a href="#" v-on:click="externalMethod('https://github.com/hypherionmc/fast-toml/')">Fast-Toml</a></p><br>
 			<p><b>License: </b></p>
 			<p>This app and code is licensed under the MIT license. You can read the full license <a href="#" v-on:click="externalMethod('https://github.com/hypherionmc/simple-rpc-editor/blob/master/license.md')">HERE</a></p><br>
 			<p><b>Contributors:</b></p>

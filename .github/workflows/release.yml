@@ -1,0 +1,49 @@
+name: Release
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+
+  publish_on_linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+      with:
+        node-version: 16
+    - name: install dependencies
+      run: yarn
+    - name: publish
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: yarn publishToGh
+
+  publish_on_mac:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+      with:
+        node-version: 16
+    - name: install dependencies
+      run: yarn
+    - name: publish
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: yarn publishToGh
+
+  publish_on_win:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+      with:
+        node-version: 16
+    - name: install dependencies
+      run: yarn
+    - name: publish
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: yarn publishToGh

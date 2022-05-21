@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 /dist
-
+yarn.lock
 
 # local env files
 .env.local
@@ -21,6 +21,10 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+*.iml
 
+#Electron-builder output
+/dist_electron
+out
 package-lock.json
-Cargo.lock
+yarn.lock

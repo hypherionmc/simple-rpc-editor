@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import vueNiceScrollbar from 'vue-nice-scrollbar';
 import vSelect from 'vue-select';
 import VueSweetalert2 from 'vue-sweetalert2';
+
 import {
 	faDownload,
 	faQuestionCircle,

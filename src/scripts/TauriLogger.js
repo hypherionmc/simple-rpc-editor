@@ -1,4 +1,4 @@
-import { fs } from '@tauri-apps/api';
+//import { fs } from '@tauri-apps/api';
 
 const TauriLogger = {
 
@@ -8,9 +8,9 @@ const TauriLogger = {
 
 	init: async function(logname, keepOld) {
 
-		await fs.createDir("logs", {
+		/*await fs.createDir("logs", {
 			recursive: true
-		});
+		});*/
 
 		this._keepOld = keepOld;
 		this._logName = keepOld ? "logs/" + logname + "-" + this.dateLogName() + ".log" : "logs/" + logname + ".log";
@@ -28,10 +28,10 @@ const TauriLogger = {
 
 	saveLog: async function () {
 
-		await fs.writeFile({
+		/*await fs.writeFile({
 			contents: this._oldLog,
 			path: this._logName
-		}, null);
+		}, null);*/
 
 	},
 

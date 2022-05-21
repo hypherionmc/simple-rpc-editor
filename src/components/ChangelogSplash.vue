@@ -2,6 +2,10 @@
 	<div class="code-editor" style='vertical-align: top !important; justify-items: normal !important; align-items: normal !important; display: block;' :class="darkMode ? 'dark' : 'light'">
 		<h4 id="changelog_head" class="text-center" style='width: 100%;' :class="darkMode ? 'dark' : 'light'">What's New</h4>
 		<pre id="changelog" style="width: 100%; height: 95%; background: transparent !important; border: 0px;" readonly="readonly" class="w-100 form-control" :class="darkMode ? 'dark' : 'light'">
+Version 3.0.0:
+* Switched to Electron to fix previous issues of configs not loading or saving on some machines
+* Portable versions are back baby! Whoooooo!
+
 Version 2.0.5:
 * Enforce discord limit of 128 chars on imageText
 

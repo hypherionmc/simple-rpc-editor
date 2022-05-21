@@ -1,73 +1,49 @@
-import { fs, dialog, app } from '@tauri-apps/api';
 import FAST_TOML from '@/scripts/fast-toml';
 import $ from 'jquery';
 import EditorUtils from '@/scripts/editorUtils';
 import AppFunctions from '@/scripts/appFunctions';
 import {help_keys} from "@/scripts/help";
-import {BaseDirectory} from "@tauri-apps/api/fs";
+
 let html_editor;
 
 const EditorFunctions = {
 
 	// Config
-	loadConfigFile: function (outRef) {
-		dialog.open({
-			defaultPath: null,
-			filters: [{
-				name: "Simple RPC Toml File",
-				extensions: ["toml"]
-			}],
-			multiple: false,
-			directory: false
-		}).then(file => {
-			this.readConfig(outRef, file);
-		}).catch(err => {
-			console.error(err);
-		})
-	},
-	readConfig: function (outRef, file) {
-		if (file !== "") {
-			if (file.endsWith(".toml")) {
-				fs.readTextFile(file, {}).then(tomlFile => {
-					const data = FAST_TOML.parse(tomlFile);
+	loadConfigFile: async function (outRef) {
+		const ret = await window.appApi.openFile();
 
-					if (data.general != null && data.general.clientID != null) {
-						outRef.configData.old = tomlFile;
-						outRef.configData.new = data;
-						outRef.configData.configPath = file;
-						outRef.configData.isConfigLoaded = true;
-						outRef.configData.configType = "NORMAL";
-						this.fetchDiscordAssets(data.general.clientID, outRef);
-					} else if (data.entry != null) {
-						outRef.configData.old = tomlFile;
-						outRef.configData.new = data;
-						outRef.configData.configPath = file;
-						outRef.configData.isConfigLoaded = true;
-						outRef.configData.configType = "SERVER";
-					} else {
-						outRef.$swal.fire({
-							title: "Error",
-							icon: "error",
-							text: "Selected file does not appear to be a valid Simple RPC config file"
-						});
-					}
-				}).catch(err => {
-					outRef.$swal.fire({
-						title: "Error",
-						icon: "error",
-						text: err
-					});
-					AppFunctions.logData('ERROR', err).then(r => {});
-				});
+		if (!ret.canceled) {
+			await this.readConfig(outRef, ret.filePath);
+		}
+	},
+	readConfig: async function (outRef, file) {
+
+		if (file.endsWith(".toml")) {
+			const tomlFile = await window.appApi.readFile(file);
+			const data = FAST_TOML.parse(tomlFile);
+
+			if (data.general != null && data.general.clientID != null) {
+				outRef.configData.old = tomlFile;
+				outRef.configData.new = data;
+				outRef.configData.configPath = file;
+				outRef.configData.isConfigLoaded = true;
+				outRef.configData.configType = "NORMAL";
+				this.fetchDiscordAssets(data.general.clientID, outRef);
+			} else if (data.entry != null) {
+				outRef.configData.old = tomlFile;
+				outRef.configData.new = data;
+				outRef.configData.configPath = file;
+				outRef.configData.isConfigLoaded = true;
+				outRef.configData.configType = "SERVER";
 			} else {
 				outRef.$swal.fire({
 					title: "Error",
 					icon: "error",
-					text: file + " is not a valid TOML file!"
+					text: "Selected file does not appear to be a valid Simple RPC config file"
 				});
 			}
 		}
-		return file;
+		return true;
 	},
 
 	saveConfig: async function(appRef, save) {
@@ -148,17 +124,9 @@ const EditorFunctions = {
 		});
 
 		if (save) {
-			fs.writeFile({
-				contents: outFile,
-				path: appRef.configData.configPath
-			}, null).then(res => {
-				AppFunctions.showToast(appRef,"Error", "Config has been saved", 'success');
-				AppFunctions.logData('INFO', "Config saved to: " + appRef.configData.configPath).then(r => {});
-			}).catch(err => {
-				AppFunctions.showToast(appRef,"Error", "Config file could not be saved", 'error');
-				AppFunctions.logData('ERROR', err).then(r => {});
-				return err;
-			});
+			const val = await window.appApi.saveConfig(appRef.configData.configPath, outFile);
+			AppFunctions.showToast(appRef,"Error", "Config has been saved", 'success');
+			AppFunctions.logData('INFO', "Config saved to: " + appRef.configData.configPath).then(r => {});
 		}
 		return outFile;
 
@@ -198,17 +166,9 @@ const EditorFunctions = {
 		});
 
 		if (save) {
-			fs.writeFile({
-				contents: outFile,
-				path: appRef.configData.configPath
-			}, null).then(res => {
-				AppFunctions.showToast(appRef,"Error", "Config has been saved", 'success');
-				AppFunctions.logData('INFO', "Config saved to: " + appRef.configData.configPath).then(r => {});
-			}).catch(err => {
-				AppFunctions.showToast(appRef,"Error", "Config file could not be saved", 'error');
-				AppFunctions.logData('ERROR', err).then(r => {});
-				return err;
-			});
+			const val = await window.appApi.saveConfig(appRef.configData.configPath, outFile);
+			AppFunctions.showToast(appRef,"Error", "Config has been saved", 'success');
+			AppFunctions.logData('INFO', "Config saved to: " + appRef.configData.configPath).then(r => {});
 		}
 		return outFile;
 

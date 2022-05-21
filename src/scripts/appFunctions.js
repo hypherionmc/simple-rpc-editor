@@ -1,20 +1,59 @@
-import { shell, app, window } from '@tauri-apps/api';
 import TauriLogger from './TauriLogger';
 import $ from "jquery";
+import semver from "semver";
 
 const AppFunctions = {
 
 	setWindowTitle: async function() {
-		await window.getCurrent().setTitle("Simple RPC Editor - " + await app.getVersion())
+		const appVer = await window.appApi.appVersion();
+		await window.appApi.setTitle("Simple RPC Editor - " + appVer.appVer);
 	},
 	openExternal: async function(urlToOpen) {
-		await shell.open(urlToOpen);
+		await window.appApi.openExternal(urlToOpen);
+	},
+
+	checkUpdate: async function(appRef) {
+		var versions = await window.appApi.appVersion();
+		var ext_ref = this;
+		$.ajax({
+			url: "https://srpcupdater.hypherionmc.me/api/versions/" + versions.osPlatform,
+			type: "GET",
+			dataType: "json",
+			contentType: 'application/json; charset=utf-8',
+			success: function (result) {
+				if (!result.error) {
+					if (semver.gt(result.version, appRef.appSettings.lastUpdateVer, false)) {
+						appRef.$swal.fire({
+							title: 'New Version Available - ' + result.version,
+							text: "A new version of Simple RPC Editor is available. Due to costly code signing certificates, you will have to manually download and update your app. Click Download Update below to download the file in your external browser",
+							icon: 'info',
+							showCancelButton: true,
+							confirmButtonColor: '#3085d6',
+							cancelButtonColor: '#d33',
+							confirmButtonText: 'Download Update'
+						}).then((res) => {
+							if (res.isConfirmed) {
+								ext_ref.openExternal("https://srpcupdater.hypherionmc.me");
+								appRef.appSettings.lastUpdateVer = result.version;
+							} else {
+								appRef.appSettings.lastUpdateVer = result.version;
+							}
+						});
+					}
+				}
+			},
+			error: function (error) {
+				console.log("Failed to check for updates");
+				console.error(error.response);
+			}
+		})
 	},
 
 	loadSettings: function(appRef) {
 		appRef.appSettings.showPreview = localStorage.getItem("showpreview") === 'true';
 		appRef.appSettings.showChangelog = localStorage.getItem("showcl") === 'true';
 		appRef.appSettings.lastInternalVer = parseInt(localStorage.getItem("internalver"));
+		appRef.appSettings.lastUpdateVer = localStorage.getItem("lastupdatever");
 		if (localStorage.getItem("darkmode") !== null) {
 			appRef.darkMode = localStorage.getItem("darkmode") === 'true';
 		}
@@ -28,6 +67,7 @@ const AppFunctions = {
 		localStorage.setItem("internalver", appRef.appSettings.internalVer.toString());
 		localStorage.setItem("darkmode", appRef.darkMode.toString());
 		localStorage.setItem("showhelp", appRef.showHelp.toString());
+		localStorage.setItem("lastupdatever", appRef.appSettings.lastUpdateVer);
 	},
 
 	initLogger: function() {
@@ -62,9 +102,9 @@ const AppFunctions = {
 			$(".rpcState").text(this.dummyVars(dat.state)).attr("title", this.dummyVars(dat.state));
 
 			if (dat.buttons[0] != null) {
-				var buttonHTML = `<a id="rpcButton1" class="disabled btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 140px; left: 20px; width: 280px;" href="${dat.buttons[0].url}">${dat.buttons[0].label}</a>`;
+				var buttonHTML = `<a id="rpcButton1" class="btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 140px; left: 20px; width: 280px;" href="#" @click="openExternal('${dat.buttons[0].url}')">${dat.buttons[0].label}</a>`;
 				if (dat.buttons[1] != null) {
-					buttonHTML += `<a id="rpcButton2" class="disabled btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 190px; left: 20px; width: 280px;" href="${dat.buttons[1].url}">${dat.buttons[1].label}</a>`;
+					buttonHTML += `<a id="rpcButton2" class="btn btn-outline-primary text-white" style="border-color: white; position: absolute; top: 190px; left: 20px; width: 280px;" href="#" @click="openExternal('${dat.buttons[1].url}')">${dat.buttons[1].label}</a>`;
 				}
 				$(".rpcButtonContainer").html(buttonHTML);
 			} else {
@@ -77,7 +117,7 @@ const AppFunctions = {
 					.css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.new.general.clientID + "/" + assetID[0].id + ".png)")
 					.css("background-size", "100% 100%")
 					.attr("title", this.dummyVars(dat.largeImageText));
-			} else if (appRef.configData.new[sec].largeImageKey.startsWith("http")) {
+			} else if (appRef.configData.new[sec].largeImageKey !== undefined && appRef.configData.new[sec].largeImageKey.startsWith("http")) {
 				$("#rpcLargeImage")
 					.css("background", "url(" + appRef.configData.new[sec].largeImageKey + ")")
 					.css("background-size", "100% 100%")
@@ -90,7 +130,7 @@ const AppFunctions = {
 					.css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.new.general.clientID + "/" + assetIDSmall[0].id + ".png)")
 					.css("background-size", "100% 100%")
 					.attr("title", this.dummyVars(dat.smallImageText));
-			} else if (appRef.configData.new[sec].smallImageKey.startsWith("http")) {
+			} else if (appRef.configData.new[sec].smallImageKey !== undefined && appRef.configData.new[sec].smallImageKey.startsWith("http")) {
 				$("#rpcSmallImage")
 					.css("background", "url(" + appRef.configData.new[sec].smallImageKey + ")")
 					.css("background-size", "100% 100%")

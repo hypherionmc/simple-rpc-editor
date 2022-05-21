@@ -3,7 +3,7 @@
 		<b-container fluid>
 
 			<SplashScreen :darkMode='darkMode' />
-			<NoConfigSplash :configMethod='loadConfigFile' :darkMode='darkMode' v-if='!configData.isConfigLoaded' />
+			<NoConfigSplash :configMethod='loadConfigFile' :darkMode='darkMode' v-show='!configData.isConfigLoaded' />
 			<AboutSplash :aboutInfo='aboutInfo' :externalMethod='openExternal' :darkMode='darkMode' v-if='aboutInfo.showAbout' :showChangelog='() => appSettings.showChangelog = true' />
 			<ChangelogSplash :closeConf='() => appSettings.showChangelog = false' v-if='appSettings.showChangelog && configData.isConfigLoaded' :darkMode='darkMode' />
 
@@ -47,7 +47,7 @@
 					<a href="#" class="support-button left-border" :class="darkMode ? 'dark' : 'light'" v-b-tooltip.right title="Report Issue" @click="openExternal('https://github.com/hypherionmc/simple-rpc-editor/issues')">
 						<font-awesome-icon :icon="['fab', 'github']" />
 					</a>
-					<a href="#" class="support-button" :class="darkMode ? 'dark' : 'light'" v-b-tooltip title="Latest Releases" @click="openExternal('https://github.com/hypherionmc/simple-rpc-editor/releases')">
+					<a href="#" class="support-button" :class="darkMode ? 'dark' : 'light'" v-b-tooltip title="Latest Releases" @click="openExternal('https://srpcupdater.hypherionmc.me/')">
 						<font-awesome-icon :icon="['fas', 'download']" />
 					</a>
 					<a href="#" class="support-button" :class="darkMode ? 'dark' : 'light'" v-b-tooltip title="Support Discord" @click="openExternal('https://discord.firstdarkdev.xyz')">
@@ -304,7 +304,7 @@
 
 <script>
 import './assets/css/app.css';
-import { os, app, clipboard, invoke } from '@tauri-apps/api';
+//import { os, app, clipboard, invoke } from '@tauri-apps/api';
 import EditorFunctions from '@/scripts/editorFunctions';
 import EditorUtils from '@/scripts/editorUtils';
 import AppFunctions from '@/scripts/appFunctions';
@@ -344,8 +344,9 @@ export default {
 			appSettings: {
 				showPreview: false,
 				showChangelog: false,
-				internalVer: 9,
-				lastInternalVer: 8
+				internalVer: 10,
+				lastInternalVer: 9,
+        lastUpdateVer: ""
 			},
 			codeEditor: {
 				editorRef: Object,
@@ -356,7 +357,8 @@ export default {
 				showAbout: false,
 				os: "Win",
 				nlversion: "0",
-				appver: "0"
+				appver: "0",
+        chrome: "0"
 			},
 			preview: {
 				totalTime: 0
@@ -368,18 +370,22 @@ export default {
 
 		await AppFunctions.setWindowTitle();
 
+    const appVersion = await window.appApi.appVersion();
+
 		this.aboutInfo = {
 			showAbout: false,
-			os: (await os.type()).replace("_NT", "") + " " + await os.version() +  " (" + await os.arch() + ")",
-			nlversion: await app.getTauriVersion(),
-			appver: await app.getVersion()
+			os: appVersion.osName,
+			nlversion: appVersion.node,
+			appver: appVersion.appVer,
+      chrome: appVersion.chrome
 		};
 
 		AppFunctions.initLogger();
 
-		await AppFunctions.logData("INFO", "OS: " + (await os.type()).replace("_NT", "") + " (" + await os.arch() + ")");
-		await AppFunctions.logData("INFO", "Tauri Version: " + await app.getTauriVersion());
-		await AppFunctions.logData("INFO", "App Version: " + await app.getVersion());
+		await AppFunctions.logData("INFO", "OS: " + appVersion.osName);
+		await AppFunctions.logData("INFO", "Node Version: " + appVersion.node);
+    await AppFunctions.logData("INFO", "Chrome Version: " + appVersion.chrome);
+		await AppFunctions.logData("INFO", "App Version: " + appVersion.appVer);
 		await AppFunctions.logData("", "");
 
 		this.darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -389,6 +395,12 @@ export default {
 		if (this.appSettings.lastInternalVer !== this.appSettings.internalVer) {
 			this.appSettings.showChangelog = true;
 		}
+
+    if (this.appSettings.lastUpdateVer === "" || this.appSettings.lastUpdateVer === "null") {
+      this.appSettings.lastUpdateVer = appVersion.appVer;
+    }
+
+    AppFunctions.checkUpdate(this);
 
 		setInterval(async function () {
 			appRef.preview.totalTime += 1000;
@@ -443,7 +455,7 @@ export default {
 			EditorFunctions.closeCodeEditor(this);
 		},
 		copyCode: async function() {
-			await clipboard.writeText(this.codeEditor.codeEditorContent);
+      await window.appApi.copyClipboard(this.codeEditor.codeEditorContent);
 			AppFunctions.showToast(this, "Success", "Text copied to clipboard", 'success');
 		},
 		openExternal: function(url) {

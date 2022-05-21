@@ -17,9 +17,9 @@ The aim of this software is to allow you to edit config files without having to 
 
 ## Installation
 
-Since the update to the new framework, only installers are available. I may add a workaround in the future, but for now, you need to use the installer. The app should auto-update as new versions release.
+MacOS and Windows have both Portable versions and Installers available. There is no difference in these, aside from one of them creating shortcuts, and the other not.
 
-No extra dependencies are needed.
+Sadly, since electron requires code signing on MacOS for auto updates to work, the app no longer includes any form of auto updating, but instead displays a prompt whenever a new update is released.
 
 ## Supported Platforms
 
@@ -35,7 +35,7 @@ This app works on Windows, Linux and MacOS
 
 #### _Backend_
 
-* [Tauri](https://tauri.studio/) -> The main framework that interacts with the OS as well as the app used to package the executables
+* [Electron](https://www.electronjs.org/) -> The main framework that interacts with the OS as well as the app used to package the executables
 
 #### _Additional Libraries/Plugins_
 
@@ -45,10 +45,10 @@ This app works on Windows, Linux and MacOS
 
 ## Building from source
 
-* First, follow the Platform specific setup, listed here: [Tauri Setup](https://tauri.studio/docs/getting-started/prerequisites)
-* Next, run `yarn tauri init` or `npm run tauri init` to download all the needed javascript packages
-* To test the app, run `yarn tauri:serve` or `npm run tauri:serve`
-* To build a "release", you can run `yarn tauri:build` or `npm run tauri:build`
+* Fork and clone this repo to your local machine
+* Next, run `yarn` or `npm install` to download all the needed javascript packages
+* To test the app, run `yarn electron:serve` or `npm run electron:serve`
+* To build a "release", you can run `yarn electron:build` or `npm run electron:build`
 
 ## Contributing
 

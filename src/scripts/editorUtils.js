@@ -97,13 +97,11 @@ const EditorUtils = {
 		$.get("https://discord.com/api/v9/oauth2/applications/" + appID + "/rpc").then(res => {
 			appRef.configData.appName = res.name;
 			retVal = true;
-			console.log(res);
 		}).catch(err => {
 			appRef.configData.appName = "Minecraft";
 			retVal = false;
 			console.error(err.response);
 		});
-		console.log(retVal);
 		return retVal;
 	},
 
