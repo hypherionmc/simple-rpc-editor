@@ -5,6 +5,7 @@
 Version 3.0.1:
 * Fixed Simple RPC Version 3.0.0+ configs not loading in the editor
 * Added all supported variables to "dummy variables"
+* Added "Add Entry" button for empty Server Override config files
 
 Version 3.0.0:
 * Switched to Electron to fix previous issues of configs not loading or saving on some machines

@@ -96,6 +96,7 @@
             <h4 class="float-left" v-if="configData.configType === 'NORMAL'">{{appVars.activeSection.current | sectionToNormal}} Config</h4>
             <h4 class="float-left" v-if="configData.configType === 'SERVER'">Server Entries Config</h4>
             <a href="#" class="btn btn-success btn-sm float-end" v-if="appVars.activeSection.current === 'world_images' || appVars.activeSection.current === 'dimension_overrides'" v-on:click="appVars.activeSection.current === 'dimension_overrides' ? addDimension() : addWorld()">{{appVars.activeSection.current === 'dimension_overrides' ? 'Add Dimension' : 'Add World'}}</a>
+			<a href="#" class="btn btn-success btn-sm float-end" v-if="configData.configType === 'SERVER'" v-on:click="addServer()">Add Entry</a>
           </div>
 
 					<div class="card-body" style="height: 100%; overflow-y: auto;">
