@@ -43,6 +43,24 @@ export const help_keys = {
         "smallImageKey": "The Asset ID/URL of the image to display as the small image",
         "smallImageText": "The text that gets displayed when the small image is hovered"
     },
+	"realms": {
+        "enabled": "Enable/Disable the Realms Game Event",
+        "description": "The first line of text under the app name",
+        "state": "The second line of text under the app name",
+        "largeImageKey": "The Asset ID/URL of the image to display as the large image",
+        "largeImageText": "The text that gets displayed when the large image is hovered",
+        "smallImageKey": "The Asset ID/URL of the image to display as the small image",
+        "smallImageText": "The text that gets displayed when the small image is hovered"
+    },
+	"realms_list": {
+        "enabled": "Enable/Disable the Realms Screen Event",
+        "description": "The first line of text under the app name",
+        "state": "The second line of text under the app name",
+        "largeImageKey": "The Asset ID/URL of the image to display as the large image",
+        "largeImageText": "The text that gets displayed when the large image is hovered",
+        "smallImageKey": "The Asset ID/URL of the image to display as the small image",
+        "smallImageText": "The text that gets displayed when the small image is hovered"
+    },
     "single_player": {
         "enabled": "Enable/Disable the Single Player Event",
         "description": "The first line of text under the app name",

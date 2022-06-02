@@ -328,7 +328,7 @@ export default {
 					current: 'general',
 					last: 'general'
 				},
-        startTime: new Date(),
+				startTime: new Date(),
 				manualEdit: false
 			},
 			configData: {
@@ -338,15 +338,15 @@ export default {
 				configPath: "Not Loaded",
 				isConfigLoaded: false,
 				appAssets: [],
-        configType: "NORMAL",
-        appName: "Minecraft"
+				configType: "NORMAL",
+				appName: "Minecraft"
 			},
 			appSettings: {
 				showPreview: false,
 				showChangelog: false,
-				internalVer: 10,
-				lastInternalVer: 9,
-        lastUpdateVer: ""
+				internalVer: 11,
+				lastInternalVer: 10,
+				lastUpdateVer: ""
 			},
 			codeEditor: {
 				editorRef: Object,
@@ -384,7 +384,7 @@ export default {
 
 		await AppFunctions.logData("INFO", "OS: " + appVersion.osName);
 		await AppFunctions.logData("INFO", "Node Version: " + appVersion.node);
-    await AppFunctions.logData("INFO", "Chrome Version: " + appVersion.chrome);
+		await AppFunctions.logData("INFO", "Chrome Version: " + appVersion.chrome);
 		await AppFunctions.logData("INFO", "App Version: " + appVersion.appVer);
 		await AppFunctions.logData("", "");
 
@@ -396,11 +396,11 @@ export default {
 			this.appSettings.showChangelog = true;
 		}
 
-    if (this.appSettings.lastUpdateVer === "" || this.appSettings.lastUpdateVer === "null") {
-      this.appSettings.lastUpdateVer = appVersion.appVer;
-    }
+		if (this.appSettings.lastUpdateVer === "" || this.appSettings.lastUpdateVer === "null") {
+		  this.appSettings.lastUpdateVer = appVersion.appVer;
+		}
 
-    AppFunctions.checkUpdate(this);
+		AppFunctions.checkUpdate(this);
 
 		setInterval(async function () {
 			appRef.preview.totalTime += 1000;
@@ -414,7 +414,7 @@ export default {
 
 					appRef.configData.lastConfigData = _.cloneDeep(appRef.configData.new);
 					appRef.appVars.activeSection.last = appRef.appVars.activeSection.current;
-          EditorFunctions.fetchDiscordAssets(appRef.configData.new.general.clientID, appRef);
+					EditorFunctions.fetchDiscordAssets(appRef.configData.new.general.clientID, appRef);
 					AppFunctions.updateRPC(appRef, appRef.appVars.activeSection.current);
 				}
 			}

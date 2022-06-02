@@ -160,8 +160,21 @@ const AppFunctions = {
 		inputText = inputText.replace("%pack%", "Dummy Pack");
 		inputText = inputText.replace("%savename%", "My Awesome World");
 		inputText = inputText.replace("%server%", "127_0_0_1");
-		inputText = inputText.replace("%launchername%", "GDLauncher");
+		inputText = inputText.replace("%launchername%", "gdlauncher");
+		inputText = inputText.replace("%instance%", "My Awesome MultiMC Instance");
+		inputText = inputText.replace("%launcher%", "Curseforge");
+		inputText = inputText.replace("%playerhead%", "https://cdn.firstdarkdev.xyz/srpc/hyphead.png");
+		inputText = inputText.replace("%gametime12%", "01:00 PM");
+		inputText = inputText.replace("%gametime%", "13:00");
+		inputText = inputText.replace("%day%", Math.floor(Math.random() * 12));
+		inputText = inputText.replace("%weather%", "Snowing");
+		inputText = inputText.replace("%servericon%", "https://cdn.firstdarkdev.xyz/srpc/servericon.png");
 
+		inputText = inputText.replace("%realmname%", "Players Awesome Realm");
+		inputText = inputText.replace("%realmdescription%", "Here be dragons and loot!");
+		inputText = inputText.replace("%realmgame%", "No Mini-game Loaded");
+		inputText = inputText.replace("%realmicon%", "https://cdn.firstdarkdev.xyz/srpc/servericon.png");
+		
 		return inputText;
 
 	},
