@@ -23,6 +23,12 @@ const EditorUtils = {
 
 			case "main_menu":
 				return "list";
+				
+			case "realms":
+				return "sign";
+				
+			case "realms_list":
+				return "stream";
 
 			case "server_list":
 				return "server";
@@ -45,6 +51,7 @@ const EditorUtils = {
 			case "dimension_overrides":
 				return "globe";
 		}
+		return "archive";
 	},
 
 	deepCopy: function (src) {

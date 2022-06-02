@@ -27,6 +27,13 @@ async function createWindow() {
   })
 
   win.setMenu(null);
+  
+  win.webContents.on('before-input-event', (event, input) => {
+	  if (input.control && input.shift && input.key.toLowerCase() === 'i') {
+		win.openDevTools()
+		event.preventDefault()  
+	  }
+  })
 
   ipcMain.on('set-title', (event, title) => {
     const webContents = event.sender;
