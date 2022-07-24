@@ -114,7 +114,7 @@
 
 								<v-select :options="configData.appAssets" class="image-chooser" :class="darkMode ? 'dark' : 'light'" label="name" v-if="(key === 'largeImageKey' || key === 'smallImageKey') && !appVars.manualEdit" v-model="configData.new[appVars.activeSection.current][key]" :reduce="option => option.name" taggable>
 									<template slot="option" slot-scope="option">
-										<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID + '/' + option.id" style="width: 48px;"/>
+										<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID != null ? configData.new.general.clientID : configData.new.general.applicationID + '/' + option.id" style="width: 48px;"/>
 										{{ option.name }}
 									</template>
 								</v-select>
@@ -143,7 +143,7 @@
 
                 <v-select :options="configData.appAssets" class="image-chooser" :class="darkMode ? 'dark' : 'light'" label="name" v-if="(key === 'largeImageKey' || key === 'smallImageKey') && !appVars.manualEdit" v-model="configData.new[key]" :reduce="option => option.name" taggable>
                   <template slot="option" slot-scope="option">
-                    <img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID + '/' + option.id" style="width: 48px;"/>
+                    <img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID != null ? configData.new.general.clientID : configData.new.general.applicationID + '/' + option.id" style="width: 48px;"/>
                     {{ option.name }}
                   </template>
                 </v-select>
@@ -198,7 +198,7 @@
 
 											<v-select :options="configData.appAssets" class="image-chooser" :class="darkMode ? 'dark' : 'light'" label="name" v-if="(datakey === 'largeImageKey' || datakey === 'smallImageKey')" v-model="configData.new.world_images.worlds[key][datakey]" :reduce="option => option.name" taggable>
 												<template slot="option" slot-scope="option">
-													<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID + '/' + option.id" style="width: 48px;"/>
+													<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID != null ? configData.new.general.clientID : configData.new.general.applicationID + '/' + option.id" style="width: 48px;"/>
 													{{ option.name }}
 												</template>
 											</v-select>
@@ -226,7 +226,7 @@
 								</div>
 
 								<div style="padding: 10px;">
-									<div class="mb-3 row" v-for="(worldData, datakey) in dimension">
+									<div class="mb-3 row" v-for="(worldData, datakey) in dimension" v-if="datakey !== 'buttons'">
 										<label class="col-sm-2 col-form-label">{{datakey | camelToNormal}}</label>
 										<div class="col-sm-10">
 
@@ -238,7 +238,7 @@
 												:reduce="option => option.name" taggable>
 
 												<template slot="option" slot-scope="option">
-													<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID + '/' + option.id" style="width: 48px;"/>
+													<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID != null ? configData.new.general.clientID : configData.new.general.applicationID + '/' + option.id" style="width: 48px;"/>
 													{{ option.name }}
 												</template>
 
@@ -246,6 +246,24 @@
 
 										</div>
 									</div>
+
+                  <div class="card" v-if="configData.new.dimension_overrides.dimensions[key].buttons != null" :class="darkMode ? 'dark' : 'light'" >
+
+                    <div class="card-header">
+                      Buttons <button class="btn btn-sm btn-danger float-end" v-if="configData.new.dimension_overrides.dimensions[key].buttons.length < 2" v-on:click="addDimButton(key)">Add</button>
+                    </div>
+
+                    <div style="padding: 10px;">
+                      <div class="input-group mb-3" v-for="(button, index) in configData.new.dimension_overrides.dimensions[key].buttons">
+                        <span class="input-group-text" style="border-radius: 5px 0px 0px 5px;">Label</span>
+                        <input type="text" class="form-control" maxlength="32" v-model="button.label" style="border-radius: 0px;" :class="darkMode ? 'dark' : 'light'">
+                        <span class="input-group-text" style="border-radius: 0px;">Url</span>
+                        <input type="text" class="form-control" v-model="button.url" style="border-radius: 0px;" :class="darkMode ? 'dark' : 'light'">
+                        <button class="btn btn-warning btn-sm" v-on:click="deleteDimButton(key, index)" style="border-radius: 0px 5px 5px 0px;">Delete</button>
+                      </div>
+                    </div>
+
+                  </div>
 								</div>
 
 							</div>
@@ -415,7 +433,7 @@ export default {
 
 					appRef.configData.lastConfigData = _.cloneDeep(appRef.configData.new);
 					appRef.appVars.activeSection.last = appRef.appVars.activeSection.current;
-					EditorFunctions.fetchDiscordAssets(appRef.configData.new.general.clientID, appRef);
+					EditorFunctions.fetchDiscordAssets(appRef.configData.new.general.clientID != null ? appRef.configData.new.general.clientID : appRef.configData.new.general.applicationID, appRef);
 					AppFunctions.updateRPC(appRef, appRef.appVars.activeSection.current);
 				}
 			}
@@ -440,6 +458,12 @@ export default {
 		deleteButton: function(sec, index) {
 			EditorFunctions.deleteButton(this, sec, index);
 		},
+    addDimButton: function(sec) {
+      EditorFunctions.addDimButton(this, sec);
+    },
+    deleteDimButton: function(sec, index) {
+      EditorFunctions.deleteDimButton(this, sec, index);
+    },
 		saveConfig: function() {
 			if (this.configData.configType === 'NORMAL') {
         EditorFunctions.saveConfig(this, true);

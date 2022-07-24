@@ -1,6 +1,7 @@
 export const help_keys = {
     "general": {
         "clientID": "The Client ID of the Discord App to use. Replace this with your client id from the discord dashboard to change the name of the app",
+        "applicationID": "The Application ID of the Discord App to use. Replace this with your client id from the discord dashboard to change the name of the app",
         "enabled": "Enable/Disable the mod",
         "debugging": "Enable/Disable debugging mode. WARNING: MAY CAUSE LOG SPAM!",
         "configScreen": "Enable/Disable the in game config screen",

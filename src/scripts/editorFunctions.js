@@ -22,13 +22,13 @@ const EditorFunctions = {
 			const tomlFile = await window.appApi.readFile(file);
 			const data = FAST_TOML.parse(tomlFile);
 
-			if (data.general != null && data.general.clientID != null) {
+			if (data.general != null && (data.general.clientID != null || data.general.applicationID != null)) {
 				outRef.configData.old = tomlFile;
 				outRef.configData.new = data;
 				outRef.configData.configPath = file;
 				outRef.configData.isConfigLoaded = true;
 				outRef.configData.configType = "NORMAL";
-				this.fetchDiscordAssets(data.general.clientID, outRef);
+				this.fetchDiscordAssets(data.general.applicationID != null ? data.general.applicationID : data.general.clientID, outRef);
 			} else if (data.entry != null) {
 				outRef.configData.old = tomlFile;
 				outRef.configData.new = data;
@@ -105,6 +105,19 @@ const EditorFunctions = {
 
 						for (let i = 0; i < subvalue.length; i++) {
 							outFile += `\n\t[[${key}.dimensions]]\n\t\tname = "${subvalue[i].name}"\n\t\tdescription = "${subvalue[i].description}"\n\t\tstate = "${subvalue[i].state}"\n\t\tlargeImageKey = "${subvalue[i].largeImageKey}"\n\t\tlargeImageText = "${subvalue[i].largeImageText}"\n\t\tsmallImageKey = "${subvalue[i].smallImageKey}"\n\t\tsmallImageText = "${subvalue[i].smallImageText}"\n`;
+							if (subvalue[i].buttons.length > 0) {
+
+								for (let ii = 0; ii < subvalue[i].buttons.length; ii++) {
+									outFile += `\n\t\t[[${key}.buttons]]\n\t\tlabel = "${subvalue[i].buttons[ii].label}"\n\t\turl = "${subvalue[i].buttons[ii].url}"\n`;
+								}
+
+								if (subvalue.length > 1) {
+									outFile += `\n`;
+								}
+
+							} else {
+								outFile += `\t\tbuttons = []\n`;
+							}
 						}
 
 						if (subvalue.length > 1) {
@@ -212,6 +225,34 @@ const EditorFunctions = {
 		}).then((result) => {
 			if (result.isConfirmed) {
 				dataRef.configData.new[section].buttons.splice(index, 1);
+				dataRef.$swal.fire(
+					'Deleted!',
+					'Your button has been deleted.',
+					'success'
+				)
+			}
+		});
+	},
+	addDimButton: function(dataRef, section) {
+		var buttonData = {
+			label: "",
+			url: ""
+		};
+
+		dataRef.configData.new.dimension_overrides.dimensions[section].buttons.push(buttonData);
+	},
+	deleteDimButton: function(dataRef, section, index) {
+		dataRef.$swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, delete it!'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				dataRef.configData.new.dimension_overrides.dimensions[section].buttons.splice(index, 1);
 				dataRef.$swal.fire(
 					'Deleted!',
 					'Your button has been deleted.',
