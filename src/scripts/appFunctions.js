@@ -114,7 +114,7 @@ const AppFunctions = {
 			var assetID = appRef.configData.appAssets.filter(c => c.name === appRef.configData.new[sec].largeImageKey);
 			if (assetID[0] !== undefined && assetID[0].hasOwnProperty("id")) {
 				$("#rpcLargeImage")
-					.css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.new.general.clientID + "/" + assetID[0].id + ".png)")
+					.css("background", "url(https://cdn.discordapp.com/app-assets/" + (appRef.configData.new.general.clientID != null ? appRef.configData.new.general.clientID : appRef.configData.new.general.applicationID) + "/" + assetID[0].id + ".png)")
 					.css("background-size", "100% 100%")
 					.attr("title", this.dummyVars(dat.largeImageText));
 			} else if (appRef.configData.new[sec].largeImageKey !== undefined && appRef.configData.new[sec].largeImageKey.startsWith("http")) {
@@ -127,7 +127,7 @@ const AppFunctions = {
 			var assetIDSmall = appRef.configData.appAssets.filter(c => c.name === appRef.configData.new[sec].smallImageKey);
 			if (assetIDSmall[0] !== undefined && assetIDSmall[0].hasOwnProperty("id")) {
 				$("#rpcSmallImage")
-					.css("background", "url(https://cdn.discordapp.com/app-assets/" + appRef.configData.new.general.clientID + "/" + assetIDSmall[0].id + ".png)")
+					.css("background", "url(https://cdn.discordapp.com/app-assets/" + (appRef.configData.new.general.clientID != null ? appRef.configData.new.general.clientID : appRef.configData.new.general.applicationID) + "/" + assetIDSmall[0].id + ".png)")
 					.css("background-size", "100% 100%")
 					.attr("title", this.dummyVars(dat.smallImageText));
 			} else if (appRef.configData.new[sec].smallImageKey !== undefined && appRef.configData.new[sec].smallImageKey.startsWith("http")) {
@@ -174,7 +174,7 @@ const AppFunctions = {
 		inputText = inputText.replace("%realmdescription%", "Here be dragons and loot!");
 		inputText = inputText.replace("%realmgame%", "No Mini-game Loaded");
 		inputText = inputText.replace("%realmicon%", "https://cdn.firstdarkdev.xyz/srpc/servericon.png");
-		
+
 		return inputText;
 
 	},

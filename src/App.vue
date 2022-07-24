@@ -114,7 +114,7 @@
 
 								<v-select :options="configData.appAssets" class="image-chooser" :class="darkMode ? 'dark' : 'light'" label="name" v-if="(key === 'largeImageKey' || key === 'smallImageKey') && !appVars.manualEdit" v-model="configData.new[appVars.activeSection.current][key]" :reduce="option => option.name" taggable>
 									<template slot="option" slot-scope="option">
-										<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID != null ? configData.new.general.clientID : configData.new.general.applicationID + '/' + option.id" style="width: 48px;"/>
+										<img :src="'https://cdn.discordapp.com/app-assets/' + (configData.new.general.clientID != null ? configData.new.general.clientID : configData.new.general.applicationID) + '/' + option.id" style="width: 48px;"/>
 										{{ option.name }}
 									</template>
 								</v-select>
@@ -198,7 +198,7 @@
 
 											<v-select :options="configData.appAssets" class="image-chooser" :class="darkMode ? 'dark' : 'light'" label="name" v-if="(datakey === 'largeImageKey' || datakey === 'smallImageKey')" v-model="configData.new.world_images.worlds[key][datakey]" :reduce="option => option.name" taggable>
 												<template slot="option" slot-scope="option">
-													<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID != null ? configData.new.general.clientID : configData.new.general.applicationID + '/' + option.id" style="width: 48px;"/>
+													<img :src="'https://cdn.discordapp.com/app-assets/' + (configData.new.general.clientID != null ? configData.new.general.clientID : configData.new.general.applicationID) + '/' + option.id" style="width: 48px;"/>
 													{{ option.name }}
 												</template>
 											</v-select>
@@ -238,7 +238,7 @@
 												:reduce="option => option.name" taggable>
 
 												<template slot="option" slot-scope="option">
-													<img :src="'https://cdn.discordapp.com/app-assets/' + configData.new.general.clientID != null ? configData.new.general.clientID : configData.new.general.applicationID + '/' + option.id" style="width: 48px;"/>
+													<img :src="'https://cdn.discordapp.com/app-assets/' + (configData.new.general.clientID != null ? configData.new.general.clientID : configData.new.general.applicationID) + '/' + option.id" style="width: 48px;"/>
 													{{ option.name }}
 												</template>
 
