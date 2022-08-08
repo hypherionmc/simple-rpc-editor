@@ -2,8 +2,17 @@
 	<div class="code-editor" style='vertical-align: top !important; justify-items: normal !important; align-items: normal !important; display: block;' :class="darkMode ? 'dark' : 'light'">
 		<h4 id="changelog_head" class="text-center" style='width: 100%;' :class="darkMode ? 'dark' : 'light'">What's New</h4>
 		<pre id="changelog" style="width: 100%; height: 95%; background: transparent !important; border: 0px;" readonly="readonly" class="w-100 form-control" :class="darkMode ? 'dark' : 'light'">
+Version 3.0.3:
+* Fixed Dimension Override Buttons saving incorrectly and causing game crashes
+* Fixed Editor Failing to save older version config files
+* Fixed "Missing" image keys saving as `undefined` causing corrupt configs
+
+Version 3.0.2:
+* Added support for Simple RPC 3.0.1 Config Changes
+* Updated some dependencies with security issues
+
 Version 3.0.1:
-* Fixed Simple RPC Version 3.0.0+ configs not loading in the editor
+* Fixed Simple RPC V3+ config files not loading
 * Added all supported variables to "dummy variables"
 * Added "Add Entry" button for empty Server Override config files
 

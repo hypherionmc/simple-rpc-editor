@@ -60,74 +60,60 @@ const EditorFunctions = {
 				}
 
 				if (subkey !== "buttons" && subkey !== "worlds" && subkey !== "dimensions") {
-
 					if (typeof subvalue === "string" && !EditorUtils.isNumeric(subvalue)) {
 						outFile += `\t${subkey} = "${subvalue}"\n`;
+					} else if (subvalue === undefined) {
+						outFile += `\t${subkey} = ""\n`;
 					} else {
 						outFile += `\t${subkey} = ${subvalue}\n`;
 					}
-
 				} else if (subkey === "buttons") {
-
 					if (subvalue.length > 0) {
-
 						for (let i = 0; i < subvalue.length; i++) {
 							outFile += `\n\t[[${key}.buttons]]\n\t\tlabel = "${subvalue[i].label}"\n\t\turl = "${subvalue[i].url}"\n`;
 						}
-
 						if (subvalue.length > 1) {
 							outFile += `\n`;
 						}
-
 					} else {
 						outFile += `\tbuttons = []\n`;
 					}
-
 				} else if (subkey === "worlds") {
-
 					if (subvalue.length > 0) {
-
 						for (let i = 0; i < subvalue.length; i++) {
 							outFile += `\n\t[[${key}.worlds]]\n\t\tworldname = "${subvalue[i].worldname}"\n\t\tlargeImageKey = "${subvalue[i].largeImageKey}"\n\t\tlargeImageText = "${subvalue[i].largeImageText}"\n\t\tsmallImageKey = "${subvalue[i].smallImageKey}"\n\t\tsmallImageText = "${subvalue[i].smallImageText}"\n`;
 						}
-
 						if (subvalue.length > 1) {
 							outFile += `\n`;
 						}
-
 					} else {
 						outFile += `\tworlds = []\n`;
 					}
-
 				} else if (subkey === "dimensions") {
 
 					if (subvalue.length > 0) {
-
 						for (let i = 0; i < subvalue.length; i++) {
 							outFile += `\n\t[[${key}.dimensions]]\n\t\tname = "${subvalue[i].name}"\n\t\tdescription = "${subvalue[i].description}"\n\t\tstate = "${subvalue[i].state}"\n\t\tlargeImageKey = "${subvalue[i].largeImageKey}"\n\t\tlargeImageText = "${subvalue[i].largeImageText}"\n\t\tsmallImageKey = "${subvalue[i].smallImageKey}"\n\t\tsmallImageText = "${subvalue[i].smallImageText}"\n`;
-							if (subvalue[i].buttons.length > 0) {
 
-								for (let ii = 0; ii < subvalue[i].buttons.length; ii++) {
-									outFile += `\n\t\t[[${key}.buttons]]\n\t\tlabel = "${subvalue[i].buttons[ii].label}"\n\t\turl = "${subvalue[i].buttons[ii].url}"\n`;
+							if (appRef.configData.new.general.version > 15) {
+								if (subvalue[i].buttons.length > 0) {
+									for (let ii = 0; ii < subvalue[i].buttons.length; ii++) {
+										outFile += `\n\t\t[[${key}.dimensions.buttons]]\n\t\t\tlabel = "${subvalue[i].buttons[ii].label}"\n\t\t\turl = "${subvalue[i].buttons[ii].url}"\n`;
+									}
+									if (subvalue.length > 1) {
+										outFile += `\n`;
+									}
+								} else {
+									outFile += `\t\tbuttons = []\n`;
 								}
-
-								if (subvalue.length > 1) {
-									outFile += `\n`;
-								}
-
-							} else {
-								outFile += `\t\tbuttons = []\n`;
 							}
 						}
-
 						if (subvalue.length > 1) {
 							outFile += `\n`;
 						}
-
 					} else {
 						outFile += `\tdimensions = []\n`;
 					}
-
 				}
 
 			});

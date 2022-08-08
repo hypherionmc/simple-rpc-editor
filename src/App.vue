@@ -247,7 +247,7 @@
 										</div>
 									</div>
 
-                  <div class="card" v-if="configData.new.dimension_overrides.dimensions[key].buttons != null" :class="darkMode ? 'dark' : 'light'" >
+                  <div class="card" v-if="configData.new.general.version > 15 && configData.new.dimension_overrides.dimensions[key].buttons != null" :class="darkMode ? 'dark' : 'light'" >
 
                     <div class="card-header">
                       Buttons <button class="btn btn-sm btn-danger float-end" v-if="configData.new.dimension_overrides.dimensions[key].buttons.length < 2" v-on:click="addDimButton(key)">Add</button>
@@ -363,8 +363,8 @@ export default {
 			appSettings: {
 				showPreview: false,
 				showChangelog: false,
-				internalVer: 11,
-				lastInternalVer: 10,
+				internalVer: 12,
+				lastInternalVer: 11,
 				lastUpdateVer: ""
 			},
 			codeEditor: {
