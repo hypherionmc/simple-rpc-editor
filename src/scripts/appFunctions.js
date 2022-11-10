@@ -1,6 +1,7 @@
 import TauriLogger from './TauriLogger';
 import $ from "jquery";
 import semver from "semver";
+import {startsWith} from "lodash";
 
 const AppFunctions = {
 
@@ -88,11 +89,10 @@ const AppFunctions = {
 	},
 
 	updateRPC: function (appRef, sec) {
-
-		if (appRef.configData.new[sec] != null) {
+		if (appRef.configData.new[sec] != null && appRef.configData.configType !== 'SERVER') {
 			let dat;
 
-			if (sec !== "general" && sec !== "world_images" && sec !== "dimension_overrides") {
+			if (sec !== "general" && sec !== "dimension_overrides" && sec !== "custom") {
 				dat = appRef.configData.new[sec].enabled ? appRef.configData.new[sec] : appRef.configData.new.generic;
 			} else {
 				dat = appRef.configData.new.generic;
@@ -111,34 +111,50 @@ const AppFunctions = {
 				$(".rpcButtonContainer").html("");
 			}
 
-			var assetID = appRef.configData.appAssets.filter(c => c.name === appRef.configData.new[sec].largeImageKey);
-			if (assetID[0] !== undefined && assetID[0].hasOwnProperty("id")) {
-				$("#rpcLargeImage")
-					.css("background", "url(https://cdn.discordapp.com/app-assets/" + (appRef.configData.new.general.clientID != null ? appRef.configData.new.general.clientID : appRef.configData.new.general.applicationID) + "/" + assetID[0].id + ".png)")
-					.css("background-size", "100% 100%")
-					.attr("title", this.dummyVars(dat.largeImageText));
-			} else if (appRef.configData.new[sec].largeImageKey !== undefined && appRef.configData.new[sec].largeImageKey.startsWith("http")) {
-				$("#rpcLargeImage")
-					.css("background", "url(" + appRef.configData.new[sec].largeImageKey + ")")
-					.css("background-size", "100% 100%")
-					.attr("title", this.dummyVars(dat.largeImageText));
+			var largeImg = this.fetchImage(dat.largeImageKey);
+			if (largeImg != null) {
+				if (startsWith(largeImg, "http")) {
+					$("#rpcLargeImage")
+						.css("background", "url(" + largeImg + ")")
+						.css("background-size", "100% 100%")
+						.attr("title", this.dummyVars(dat.largeImageText));
+				} else {
+					var assetID = appRef.configData.appAssets.filter(c => c.name === largeImg);
+					if (assetID[0] !== undefined) {
+						$("#rpcLargeImage")
+							.css("background", "url(https://cdn.discordapp.com/app-assets/" + (appRef.configData.new.general.applicationID) + "/" + assetID[0].id + ".png)")
+							.css("background-size", "100% 100%")
+							.attr("title", this.dummyVars(dat.largeImageText));
+					}
+				}
 			}
 
-			var assetIDSmall = appRef.configData.appAssets.filter(c => c.name === appRef.configData.new[sec].smallImageKey);
-			if (assetIDSmall[0] !== undefined && assetIDSmall[0].hasOwnProperty("id")) {
-				$("#rpcSmallImage")
-					.css("background", "url(https://cdn.discordapp.com/app-assets/" + (appRef.configData.new.general.clientID != null ? appRef.configData.new.general.clientID : appRef.configData.new.general.applicationID) + "/" + assetIDSmall[0].id + ".png)")
-					.css("background-size", "100% 100%")
-					.attr("title", this.dummyVars(dat.smallImageText));
-			} else if (appRef.configData.new[sec].smallImageKey !== undefined && appRef.configData.new[sec].smallImageKey.startsWith("http")) {
-				$("#rpcSmallImage")
-					.css("background", "url(" + appRef.configData.new[sec].smallImageKey + ")")
-					.css("background-size", "100% 100%")
-					.attr("title", this.dummyVars(dat.smallImageText));
+			var smallImg = this.fetchImage(dat.smallImageKey);
+			if (smallImg != null) {
+				if (startsWith(smallImg, "http")) {
+					$("#rpcSmallImage")
+						.css("background", "url(" + smallImg + ")")
+						.css("background-size", "100% 100%")
+						.attr("title", this.dummyVars(dat.smallImageText));
+				} else {
+					var assetID = appRef.configData.appAssets.filter(c => c.name === smallImg);
+					if (assetID[0] !== undefined) {
+						$("#rpcSmallImage")
+							.css("background", "url(https://cdn.discordapp.com/app-assets/" + (appRef.configData.new.general.applicationID) + "/" + assetID[0].id + ".png)")
+							.css("background-size", "100% 100%")
+							.attr("title", this.dummyVars(dat.smallImageText));
+					}
+				}
 			}
-
 		}
 
+	},
+	fetchImage: function (key) {
+		let returnKey = key;
+		if ((key !== undefined && key !== null) && key.constructor === Array) {
+			returnKey = key[Math.floor(Math.random() * key.length)];
+		}
+		return returnKey;
 	},
 
 	dummyVars: function (inputText) {

@@ -59,13 +59,25 @@ const EditorFunctions = {
 					outFile += "\t#" + help_keys[key][subkey] + "\n";
 				}
 
-				if (subkey !== "buttons" && subkey !== "worlds" && subkey !== "dimensions") {
+				if (subkey !== "buttons" && subkey !== "worlds" && subkey !== "dimensions" && subkey !== "variables") {
 					if (typeof subvalue === "string" && !EditorUtils.isNumeric(subvalue)) {
 						outFile += `\t${subkey} = "${subvalue}"\n`;
 					} else if (subvalue === undefined) {
 						outFile += `\t${subkey} = ""\n`;
 					} else {
-						outFile += `\t${subkey} = ${subvalue}\n`;
+						if (subvalue.constructor === Array && appRef.configData.new.general.version > 16) {
+							let outval = "["
+							for (let i = 0; i < subvalue.length; i++) {
+								outval = outval + "\"" + subvalue[i] + "\"";
+								if (i < subvalue.length - 1) {
+									outval = outval + ", ";
+								}
+							}
+							outval = outval + "]";
+							outFile += `\t${subkey} = ${outval}\n`;
+						} else {
+							outFile += `\t${subkey} = "${subvalue}"\n`;
+						}
 					}
 				} else if (subkey === "buttons") {
 					if (subvalue.length > 0) {
@@ -78,22 +90,47 @@ const EditorFunctions = {
 					} else {
 						outFile += `\tbuttons = []\n`;
 					}
-				} else if (subkey === "worlds") {
+				} else if (subkey === "variables") {
 					if (subvalue.length > 0) {
 						for (let i = 0; i < subvalue.length; i++) {
-							outFile += `\n\t[[${key}.worlds]]\n\t\tworldname = "${subvalue[i].worldname}"\n\t\tlargeImageKey = "${subvalue[i].largeImageKey}"\n\t\tlargeImageText = "${subvalue[i].largeImageText}"\n\t\tsmallImageKey = "${subvalue[i].smallImageKey}"\n\t\tsmallImageText = "${subvalue[i].smallImageText}"\n`;
+							outFile += `\n\t[[${key}.variables]]\n\t\tname = "${subvalue[i].name}"\n\t\tvalue = "${subvalue[i].value}"\n`;
 						}
 						if (subvalue.length > 1) {
 							outFile += `\n`;
 						}
 					} else {
-						outFile += `\tworlds = []\n`;
+						outFile += `\tvariables = []\n`;
 					}
 				} else if (subkey === "dimensions") {
 
 					if (subvalue.length > 0) {
 						for (let i = 0; i < subvalue.length; i++) {
-							outFile += `\n\t[[${key}.dimensions]]\n\t\tname = "${subvalue[i].name}"\n\t\tdescription = "${subvalue[i].description}"\n\t\tstate = "${subvalue[i].state}"\n\t\tlargeImageKey = "${subvalue[i].largeImageKey}"\n\t\tlargeImageText = "${subvalue[i].largeImageText}"\n\t\tsmallImageKey = "${subvalue[i].smallImageKey}"\n\t\tsmallImageText = "${subvalue[i].smallImageText}"\n`;
+							let lik = "\"" + subvalue[i].largeImageKey + "\"";
+							let sik = "\"" + subvalue[i].smallImageKey + "\"";
+
+							if (subvalue[i].largeImageKey.constructor === Array && appRef.configData.new.general.version > 16) {
+								lik = "["
+								for (let k = 0; k < subvalue[i].largeImageKey.length; k++) {
+									lik = lik + "\"" + subvalue[i].largeImageKey[k] + "\"";
+									if (k < subvalue[i].largeImageKey.length - 1) {
+										lik = lik + ", ";
+									}
+								}
+								lik = lik + "]";
+							}
+
+							if (subvalue[i].smallImageKey.constructor === Array && appRef.configData.new.general.version > 16) {
+								sik = "["
+								for (let m = 0; m < subvalue[i].smallImageKey.length; m++) {
+									sik = sik + "\"" + subvalue[i].smallImageKey[m] + "\"";
+									if (m < subvalue[i].smallImageKey.length - 1) {
+										sik = sik + ", ";
+									}
+								}
+								sik = sik + "]";
+							}
+
+							outFile += `\n\t[[${key}.dimensions]]\n\t\tname = "${subvalue[i].name}"\n\t\tdescription = "${subvalue[i].description}"\n\t\tstate = "${subvalue[i].state}"\n\t\tlargeImageKey = ${lik}\n\t\tlargeImageText = "${subvalue[i].largeImageText}"\n\t\tsmallImageKey = ${sik}\n\t\tsmallImageText = "${subvalue[i].smallImageText}"\n`;
 
 							if (appRef.configData.new.general.version > 15) {
 								if (subvalue[i].buttons.length > 0) {
@@ -147,7 +184,37 @@ const EditorFunctions = {
 				if (value.length > 0) {
 
 					for (let i = 0; i < value.length; i++) {
-						outFile += `[[entry]]\n\t\tip = "${value[i].ip}"\n\t\tdescription = "${value[i].description}"\n\t\tstate = "${value[i].state}"\n\t\tlargeImageKey = "${value[i].largeImageKey}"\n\t\tlargeImageText = "${value[i].largeImageText}"\n\t\tsmallImageKey = "${value[i].smallImageKey}"\n\t\tsmallImageText = "${value[i].smallImageText}"\n`;
+						let lik = "\"" + value[i].largeImageKey + "\"";
+						let sik = "\"" + value[i].smallImageKey + "\"";
+
+						if (appRef.configData.new.version > 1) {
+							lik = "[\"" + value[i].largeImageKey + "\"]";
+							sik = "[\"" + value[i].smallImageKey + "\"]";
+						}
+
+						if (value[i].largeImageKey.constructor === Array && appRef.configData.new.version > 1) {
+							lik = "["
+							for (let k = 0; k < value[i].largeImageKey.length; k++) {
+								lik = lik + "\"" + value[i].largeImageKey[k] + "\"";
+								if (k < value[i].largeImageKey.length - 1) {
+									lik = lik + ", ";
+								}
+							}
+							lik = lik + "]";
+						}
+
+						if (value[i].smallImageKey.constructor === Array && appRef.configData.new.version > 1) {
+							sik = "["
+							for (let m = 0; m < value[i].smallImageKey.length; m++) {
+								sik = sik + "\"" + value[i].smallImageKey[m] + "\"";
+								if (m < value[i].smallImageKey.length - 1) {
+									sik = sik + ", ";
+								}
+							}
+							sik = sik + "]";
+						}
+
+						outFile += `[[entry]]\n\t\tip = "${value[i].ip}"\n\t\tdescription = "${value[i].description}"\n\t\tstate = "${value[i].state}"\n\t\tlargeImageKey = ${lik}\n\t\tlargeImageText = "${value[i].largeImageText}"\n\t\tsmallImageKey = ${sik}\n\t\tsmallImageText = "${value[i].smallImageText}"\n`;
 					}
 
 					if (value.length > 1) {
@@ -248,19 +315,17 @@ const EditorFunctions = {
 		});
 	},
 
-	// Worlds / Dimensions
-	addWorld(appRef, sec) {
-		var worldData = {
-			worldname: "",
-			largeImageKey: "",
-			largeImageText: "",
-			smallImageKey: "",
-			smallImageText: ""
+	// Custom Variables
+	addVariable: function(dataRef) {
+		var buttonData = {
+			name: "",
+			value: ""
 		};
-		appRef.configData.new[sec].worlds.push(worldData);
+
+		dataRef.configData.new.custom.variables.push(buttonData);
 	},
-	deleteWorld: function (appRef, sec, index) {
-		appRef.$swal.fire({
+	deleteVariable: function(dataRef, index) {
+		dataRef.$swal.fire({
 			title: 'Are you sure?',
 			text: "You won't be able to revert this!",
 			icon: 'warning',
@@ -270,15 +335,17 @@ const EditorFunctions = {
 			confirmButtonText: 'Yes, delete it!'
 		}).then((result) => {
 			if (result.isConfirmed) {
-				appRef.configData.new[sec].worlds.splice(index, 1);
-				appRef.$swal.fire(
+				dataRef.configData.new.custom.variables.splice(index, 1);
+				dataRef.$swal.fire(
 					'Deleted!',
-					'The world has been deleted',
+					'Your variable has been deleted.',
 					'success'
 				)
 			}
 		});
 	},
+
+	// Worlds / Dimensions
 	addDimension(appRef, sec) {
 		var worldData = {
 			name: "",
@@ -311,6 +378,8 @@ const EditorFunctions = {
 			}
 		});
 	},
+
+	// Server Entries
 	addServer(appRef) {
 		var worldData = {
 			ip: "",

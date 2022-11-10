@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-console.log("loaded!");
+console.log("Loaded Preload.js");
 
 contextBridge.exposeInMainWorld('appApi', {
    openFile: () => ipcRenderer.invoke('load-file'),

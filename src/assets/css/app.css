@@ -416,3 +416,11 @@ div.code {
 .swal2-container {
     z-index: 1000000 !important;
 }
+
+.image-chooser.dark .vs__selected {
+    background: #202940 !important;
+}
+
+.image-chooser.light .vs__selected {
+    background: white !important;
+}

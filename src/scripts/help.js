@@ -87,5 +87,9 @@ export const help_keys = {
         "largeImageText": "The text that gets displayed when the large image is hovered",
         "smallImageKey": "The Asset ID/URL of the image to display as the small image",
         "smallImageText": "The text that gets displayed when the small image is hovered"
+    },
+    "custom": {
+        "enabled": "Must these variables be parsed along with other variables",
+        "variables": "Your custom variables to add"
     }
 }
