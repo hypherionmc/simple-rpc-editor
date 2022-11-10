@@ -248,7 +248,7 @@ const EditorFunctions = {
 		// The proxy server is powered by this code: https://github.com/jesperorb/node-api-proxy
 		$.ajax({
 			type: "GET",
-			url: "https://rpc-proxy.herokuapp.com/" + appID + "/assets"
+			url: "https://rpc-proxy.firstdarkdev.xyz/" + appID + "/assets"
 		}).done(function (data, textStatus, jqXHR) {
 			assetsRef.configData.appAssets = data;
 			AppFunctions.logData('INFO', "Successfully fetched discord assets for app with id: " + appID).then(r => {});
