@@ -2,6 +2,12 @@
 	<div class="code-editor" style='vertical-align: top !important; justify-items: normal !important; align-items: normal !important; display: block;' :class="darkMode ? 'dark' : 'light'">
 		<h4 id="changelog_head" class="text-center" style='width: 100%;' :class="darkMode ? 'dark' : 'light'">What's New</h4>
 		<pre id="changelog" style="width: 100%; height: 95%; background: transparent !important; border: 0px;" readonly="readonly" class="w-100 form-control" :class="darkMode ? 'dark' : 'light'">
+Version: 3.0.4:
+* Added support for Simple RPC 3.2.0
+* Fixed some bugs with assets not being fetched correctly
+* Swapped out Assets Proxy URL from Heroku to Self Hosted (Heroku made service changes... AKA $$$$)
+* Removed a lot of dead code relating to older 1.x and 2.x config files (which have been deprecated almost a year ago)
+
 Version 3.0.3:
 * Fixed Dimension Override Buttons saving incorrectly and causing game crashes
 * Fixed Editor Failing to save older version config files

@@ -377,8 +377,8 @@ export default {
 			appSettings: {
 				showPreview: false,
 				showChangelog: false,
-				internalVer: 12,
-				lastInternalVer: 11,
+				internalVer: 13,
+				lastInternalVer: 12,
 				lastUpdateVer: ""
 			},
 			codeEditor: {
