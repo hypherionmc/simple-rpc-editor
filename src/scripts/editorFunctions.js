@@ -65,7 +65,7 @@ const EditorFunctions = {
 					} else if (subvalue === undefined) {
 						outFile += `\t${subkey} = ""\n`;
 					} else {
-						if (subvalue.constructor === Array && appRef.configData.new.general.version > 16) {
+						if ((subkey === "largeImageKey" || subkey === "smallImageKey") && subvalue.constructor === Array && appRef.configData.new.general.version > 16) {
 							let outval = "["
 							for (let i = 0; i < subvalue.length; i++) {
 								outval = outval + "\"" + subvalue[i] + "\"";
@@ -76,7 +76,7 @@ const EditorFunctions = {
 							outval = outval + "]";
 							outFile += `\t${subkey} = ${outval}\n`;
 						} else {
-							outFile += `\t${subkey} = "${subvalue}"\n`;
+							outFile += `\t${subkey} = ${subvalue}\n`;
 						}
 					}
 				} else if (subkey === "buttons") {
