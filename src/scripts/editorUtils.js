@@ -5,7 +5,7 @@ const EditorUtils = {
 
 	sectionToNormal: function (section) {
 		const normalString = section.replace('_', ' ');
-		return normalString.charAt(0).toUpperCase() + normalString.slice(1) + " Section";
+		return normalString.charAt(0).toUpperCase() + normalString.slice(1);
 	},
 
 	camelToNormal: function(value) {

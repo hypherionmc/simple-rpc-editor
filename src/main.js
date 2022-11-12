@@ -29,7 +29,7 @@ import {
 	faUser,
 	faUsers,
 	faTachometerAlt,
-	faGlobe, faEdit, faTimes, faQuestion, faStream, faSign
+	faGlobe, faEdit, faTimes, faQuestion, faStream, faSign, faBook
 } from '@fortawesome/free-solid-svg-icons';
 import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons';
 
@@ -60,7 +60,8 @@ library.add(
 	faTimes,
 	faQuestion,
 	faStream,
-	faSign
+	faSign,
+	faBook
 );
 
 import 'bootstrap/dist/css/bootstrap.min.css';

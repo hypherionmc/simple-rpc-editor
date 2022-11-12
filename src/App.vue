@@ -30,8 +30,8 @@
 						<font-awesome-icon :icon="['fas', getSectionIcon(key)]" />
 						<span class="nav-link-text">{{key | sectionToNormal}}</span>
 					</a>
-          <a href="#" :class="[darkMode ? 'dark' : 'light']" @click="openExternal('https://readme.firstdarkdev.xyz/simple-rpc/introduction/')">
-            <font-awesome-icon :icon="['fas', 'question']" />
+          <a href="#" :class="[darkMode ? 'dark' : 'light']" @click="openExternal('https://srpc.fdd-docs.com')">
+            <font-awesome-icon :icon="['fas', 'book']" />
             <span class="nav-link-text">Documentation</span>
           </a>
 				</div>
