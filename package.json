@@ -47,6 +47,7 @@
     "electron-devtools-installer": "^3.1.0",
     "vue-cli-plugin-electron-builder": "~2.1.1",
     "vue-template-compiler": "^2.6.11",
-    "vue2-ace-editor": "0.0.15"
+    "vue2-ace-editor": "0.0.15",
+    "electron-builder": "^23.0.3"
   }
 }
